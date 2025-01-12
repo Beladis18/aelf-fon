@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liturgie Locale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="calender.css">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #045c04;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            height: 100vh;
+            background-image: url('eglise.jpg'); /* Remplacez par le chemin de votre image */
+            background-size: cover; /* Ajuste l'image pour qu'elle couvre toute la zone */
+            background-position: center; /* Centrer l'image */
+            background-repeat: no-repeat; /* Empêche la répétition de l'image */
+        }
+        .haut{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .table-container {
+            margin-bottom: 20px;
+        }
+        .reading-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #liturgicalTabsContent {
+            height: calc(100vh - 270px);
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                height: 100%;
+                width: 200px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 10px;
+                height: 100%;
+            }
+            .table-container table {
+                font-size: 0.9rem;
+            }
+            #liturgicalTabsContent {
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        }
+
+        .tab-content {
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+        #liturgicalTabs{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .nav-link.active{
+        background-color: #045c04 !important;
+        color: #ffffff !important;
+    }
+    .nav-link{
+        color: #000;
+    }
+    .nav-link:hover{
+        color: #045c04;
+    }
+    h5 {
+      color: #045c04;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .text-liturgical {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.8;
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+    .audio-control {
+      margin-bottom: 30px;
+    }
+    .btn-outline-secondary{
+        color: #045c04;
+        border-bottom: #045c04;
+    }
+    .btn-outline-secondary:hover{
+        background-color: #045c04;
+        color: #FFF;
+        border-bottom: #045c04;
+    }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <h4 class="text-center py-3">Sinsɛnzɔ́ Toxo ɔ Tɔn</h4>
+            <a href="index.html">Mǐsa ɔ </a>
+            <a href="heure.html">Ganxixo lɛ</a>
+            <a href="#">Biblu</a>
+            <hr>
+            <a href=""  class="active">Afixá</a>
+            <a href="calendrier.html">Azǎnwema</a>
+            <a href="apropos.html">Nùɖé</a>
+            <a href="contact.html">Ylɔ̌</a>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="content flex-grow-1">
+            <!-- Navbar for smaller screens -->
+            <div class="d-md-none d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm" id="toggleSidebar">☰ Menu</button>
+                <h4 class="mb-0">Liturgie Locale</h4>
+            </div>
+
+            <div class="haut">
+              <!-- Date and Title -->
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-0" id="date-selectionnee"></h4>
+                    <p class="text-muted mb-0">S. Pierre Canisius, prêtre, docteur de l'Église</p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <button class="btn btn-outline-secondary btn-sm" >Aklunɔzángbe e jǎwé é</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="ouvrir-calendrier">Azàn ɖevo lɛ</button>
+                    <!-- <button class="btn btn-outline-secondary btn-sm">Gbè ɖevo</button> -->
+                </div>
+                <!-- Calendrier (initialement masqué) -->
+                <div id="calendrier-modal" class="hidden">
+                  <div id="calendrier">
+                    <div id="header-calendrier">
+                        <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="prev">&larr;</button>
+                        <span id="moisEtAnnee"></span>
+                        <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="next">&rarr;</button>
+                    </div>
+                    <div id="jours"></div>
+                    <div id="dates"></div>
+                  </div>
+                </div>
+              </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button id="btn-hier" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">&larr; Sɔ́</button>
+                <h4 class="text-center mb-4">Wema sinsɛn tɔn lɛ</h4>
+                <button id="btn-demain" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">Sɔ́ &rarr;</button>
+            </div>
+            </div>
+            
+
+       </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+    
+        // Ouvrir ou fermer la sidebar avec le bouton
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    
+        // Fermer la sidebar quand on clique à l'extérieur
+        document.addEventListener('click', (event) => {
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnToggleButton = toggleSidebar.contains(event.target);
+    
+            // Si le clic n'est pas sur la sidebar ou le bouton, fermer la sidebar
+            if (!isClickInsideSidebar && !isClickOnToggleButton) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Fonction pour obtenir la date d'aujourd'hui
+    function getTodayDate() {
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return today.toLocaleDateString('fr-FR', options);
+    }
+
+    // Fonction pour déterminer le jour liturgique
+    function getLiturgicalDay(date) {
+        // Simuler un jour liturgique en fonction de la date (exemple statique)
+        const liturgicalDays = {
+            "Azǎn ɛnɛgɔ́ ɔ́ sun tɛ́nnɛgɔ́ ɔ́ xwè 2025 tɔn mɛ": "Azǎn ɛnɛgɔ́ ɔ́ gbè ɖò Epiphanie gudo - Xwè C",
+            "2025-01-10": "Vɛnsée ɖò Epiphanie gudo - Xwè C"
+        };
+        const formattedDate = date.toISOString().split('T')[0];
+        return liturgicalDays[formattedDate] || "È tuùn sinsɛnzán ɔ ǎ .";
+    }
+
+    // Initialisation de la page avec la date d'aujourd'hui
+    const today = new Date();
+    document.getElementById('current-date').textContent = getTodayDate();
+    document.getElementById('liturgical-day').textContent = getLiturgicalDay(today);
+    </script>
+
+<script src="script.js"></script>
+    
+</body>
+</html>

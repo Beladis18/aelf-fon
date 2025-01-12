@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liturgie Locale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="calender.css">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #045c04;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            height: 100vh;
+            background-image: url('eglise.jpg'); /* Remplacez par le chemin de votre image */
+            background-size: cover; /* Ajuste l'image pour qu'elle couvre toute la zone */
+            background-position: center; /* Centrer l'image */
+            background-repeat: no-repeat; /* Empêche la répétition de l'image */
+        }
+        .haut{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .table-container {
+            margin-bottom: 20px;
+        }
+        .reading-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #liturgicalTabsContent {
+            height: calc(100vh - 270px);
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                height: 100%;
+                width: 200px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 10px;
+                height: 100%;
+            }
+            .table-container table {
+                font-size: 0.9rem;
+            }
+            #liturgicalTabsContent {
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        }
+
+        .tab-content {
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+        #liturgicalTabs{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .nav-link.active{
+        background-color: #045c04 !important;
+        color: #ffffff !important;
+    }
+    .nav-link{
+        color: #000;
+    }
+    .nav-link:hover{
+        color: #045c04;
+    }
+    h5 {
+      color: #045c04;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .text-liturgical {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.8;
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+    .audio-control {
+      margin-bottom: 30px;
+    }
+    .btn-outline-secondary{
+        color: #045c04;
+        border-bottom: #045c04;
+    }
+    .btn-outline-secondary:hover{
+        background-color: #045c04;
+        color: #FFF;
+        border-bottom: #045c04;
+    }
+    .side-bar {
+      /* position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0; */
+      width: 200px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      position:fixed;
+      font-size: 0.7rem;
+    }
+    .side-bar a {
+      display: block;
+      padding: 10px;
+      margin-bottom: 10px;
+      height: 30px;
+      color: #333;
+      text-decoration: none;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .side-bar a:hover {
+      background-color: #045c04;
+      color: white;
+    }
+
+    .scrollable-element {
+        width: 70%; /* Le reste de l'espace pour l'élément défilable */
+        margin-left: 200px;
+        overflow-y: auto; /* Permet le défilement vertical */
+        background-color: #ffffff;
+        padding: 10px;
+        border-left: 1px solid #dee2e6; /* Ligne de séparation */
+    }
+
+    @media (max-width: 900px) {
+            .side-bar {
+               display: none;
+            }
+            .scrollable-element {
+                margin-left: 0px;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <h4 class="text-center py-3">Sinsɛnzɔ́ Toxo ɔ Tɔn</h4>
+            <a href="index.html">Mǐsa ɔ </a>
+            <a href="" class="active">Ganxixo lɛ</a>
+            <a href="#">Biblu</a>
+            <hr>
+            <!-- <a href="affiche.html">Afixá</a> -->
+            <a href="calendrier.html">Azǎnwema</a>
+            <a href="apropos.html">Nùɖé</a>
+            <a href="contact.html">Ylɔ̌</a>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="content flex-grow-1">
+            <!-- Navbar for smaller screens -->
+            <div class="d-md-none d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm" id="toggleSidebar">☰ Menu</button>
+                <h4 class="mb-0">Liturgie Locale</h4>
+            </div>
+
+            <div class="haut">
+                <!-- Date and Title -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-0" id="date-selectionnee">21 Décembre 2024</h4>
+                    <p class="text-muted mb-0">Mɛ mímɛ́ Pierre Canisius, yɛhwenɔ, dotóo Sinsɛn ɔ tɔn</p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <button class="btn btn-outline-secondary btn-sm" >Aklunɔzángbe e jǎwé é</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="ouvrir-calendrier">Azàn ɖevo lɛ</button>
+                    <!-- <button class="btn btn-outline-secondary btn-sm">Gbè ɖevo</button> -->
+                </div>
+                      <!-- Calendrier (initialement masqué) -->
+                <div id="calendrier-modal" class="hidden">
+                    <div id="calendrier">
+                        <div id="header-calendrier">
+                            <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="prev">&larr;</button>
+                            <span id="moisEtAnnee"></span>
+                            <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="next">&rarr;</button>
+                        </div>
+                      <div id="jours"></div>
+                      <div id="dates"></div>
+                    </div>
+                  </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button id="hier" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">&larr; Sɔ́</button>
+                <h4 class="text-center mb-4">Ganxixo lɛ</h4>
+                <button id="demain" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">Sɔ́ &rarr;</button>
+            </div>
+            </div>
+            <ul class="nav nav-tabs justify-content-between" id="liturgicalTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="lectures-tab" data-bs-toggle="tab" data-bs-target="#lectures" type="button" role="tab">Nuxixa</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="laudes-tab" data-bs-toggle="tab" data-bs-target="#laudes" type="button" role="tab">Kpa susu</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="tierce-tab" data-bs-toggle="tab" data-bs-target="#tierce" type="button" role="tab">Atɔngɔ ɔ</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="sexte-tab" data-bs-toggle="tab" data-bs-target="#sexte" type="button" role="tab">Sext</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="none-tab" data-bs-toggle="tab" data-bs-target="#none" type="button" role="tab">Debu</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="vepres-tab" data-bs-toggle="tab" data-bs-target="#vepres" type="button" role="tab"> Vespers</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="complies-tab" data-bs-toggle="tab" data-bs-target="#complies" type="button" role="tab"> Hwɛɖiɖɔ</button>
+                </li>
+              </ul>
+
+            <div class="tab-content" id="liturgicalTabsContent">
+                <!-- Tous -->
+                <div class="tab-pane fade show active" id="lectures" role="tabpanel">
+                  
+                    <div class="container-fluid">
+                        <div class="row">
+                          <!-- Side-Bar -->
+                          <div class="col-md-2 side-bar">
+                            <a href="#lectures-invitatoire">Ylɔxɔ</a>
+                            <a href="#lectures-hymne">Han</a>
+                            <a href="#lectures-psaumes">Ðɛhan</a>
+                            <a href="#lectures-lecture">Biblu Xixa</a>
+                            <a href="#lectures-benedictus">Zakalíi sín han</a>
+                            <a href="#lectures-intercessions">Ðɛxixo</a>
+                            <a href="#lectures-notre-pere">Tɔ́ mǐtɔn </a>
+                            <a href="#lectures-benediction">Nyɔna</a>
+                            <a href="#lectures-audio">Xóɖiɖɔ</a>
+                          </div>
+                    
+                          <!-- Main Content -->
+                          <div class="col-md-7 scrollable-element">
+                            <section id="all-invitatoire">
+                                <h5>Mylɔwema</h5>
+                                <p><strong>Ðɛhan 95:</strong> "Mi wá, mi nú mǐ ná ji han dó kpa susu nú Mawu Mavɔmavɔ, mi nú mǐ ná kpa susu nú só e hwlɛn mǐ gán é! Mi nú mǐ ná sɛkpɔ́ ɛ, bó ná dó kú n'i. kpodo han xweɖuɖu tɔn lɛ kpo!" </p>
+                            </section>
+                    
+                            <section id="lectures-hymne">
+                                <h5>Hanji</h5>
+                                <p><strong>Han Zǎnzǎn tɔn:</strong> "Weziza gbɛtɔ́ lɛ tɔn, Jezu, susu Tɔ́ ɔ tɔn, hwi mɛ e nɔ kɔ́n bo nɔ bló bɔ nǔ e tíìn lɛ é bǐ nɔ nyí nǔ mímɛ́ é."</p>
+                            </section>
+                    
+                            <section id="lectures-psaumes">
+                                <h5>Ðɛhan</h5>
+                                <p><strong>Ðɛhan 23:</strong> "Mawu Mavɔmavɔ wɛ nyí lɛngbɔ̌nyitɔ́ ce, nǔɖé na hwedó mì ǎ. É nɔ sɔ́ mì ɖó gbehan e mɛ ama ɖè é jí."</p>
+                                <p><strong>Ðɛhan 100:</strong> "Mi mɛ e ɖo ayǐkúngban jí lɛ́ɛ bǐ, mi sú xó kpódó awǎjíjɛ kpó nú Mawu Mavɔmavɔ, mi sɛn Mawu Mavɔmavɔ kpódó awǎjíjɛ kpó, mi wá gɔ̌n tɔn kpódó awǎjíjɛ han kpó!"</p>
+                            </section>
+                    
+                            <section id="lectures-lecture">
+                                <h5>Biblu Xixa</h5>
+                                <p><strong>Wɛnɖagbe Jaan tɔn 8, 12:</strong> "Jezu lɛ́ ɖɔ nú yě ɖɔ: 'Nyɛ wɛ nyí wěziza gbɛ ɔ́ tɔn. Mɛ e xwedó mì ɔ́ ná ɖi zɔnlin gbɔn ablu mɛ ǎ; .'"</p>
+                            </section>
+                    
+                            <section id="lectures-benedictus">
+                                <h5>Zakalíi (Benedikti) sín han</h5>
+                                <p>"Susu nú Mawu Mavɔmavɔ, Mawu Izlayɛ́li tɔn e nɔ ba togun tɔn kpɔ́n, bó nɔ hwlɛ́n ɛ gán é.
+                            </section>
+                    
+                            <section id="lectures-intercessions">
+                                <h5>Ðɛxixo</h5>
+                                <p>"Aklunɔ, azǎn elɔ e jɛ ji ɔ, hɛn mi ɖo weziza towe mɛ. Nu azinzɔnnɔ lɛ kpodo mɛ e ɖo wuvɛ se wɛ lɛ kpo ɔ, na fifa towe kpodo gbɔjɛ towe kpo."</p>
+                            </section>
+                    
+                            <section id="lectures-notre-pere">
+                                <h5>Tɔ́ mǐtɔn</h5>
+                                <p>"Tɔ́ mǐtɔn e ɖo sɛ́xwé ɔ́, nyǐkɔ towe ní nyí nǔ sísí, axɔ́súɖuɖu towe ní wá, jlǒ towe ní nyí wiwa ɖo ayǐkúngban jí lě e é nɔ nyí gbɔn ɖo sɛ́xwé é ɖɔhun..."</p>
+                            </section>
+                    
+                            <section id="lectures-benediction">
+                                <h5>Nyɔna</h5>
+                                <p>"Mawu Mavɔmavɔ ni xo ɖɛ dó mi jí bo hɛn mi. Nukúnmɛ tɔn ni kɔ́n dó mi jí bo na fífá tɔn mi."</p>
+                            </section>
+                            <audio class="audio-control" id="lectures-audio" controls>
+                                <source src="audio/first-reading.mp3" type="audio/mpeg">
+                                Votre navigateur ne supporte pas l'élément audio.
+                            </audio>
+                          </div>
+                        </div>
+                      </div>
+                    
+                </div>
+                <!-- Tous -->
+                <div class="tab-pane fade" id="laudes" role="tabpanel">
+                  
+                    <div class="container-fluid">
+                        <div class="row">
+                          <!-- Side-Bar -->
+                          <div class="col-md-2 side-bar">
+                            <a href="#laudes-invitatoire">Ylɔxɔ</a>
+                            <a href="#laudes-hymne">Han</a>
+                            <a href="#laudes-psaumes">Ðɛhan</a>
+                            <a href="#laudes-lecture">Biblu Xixa</a>
+                            <a href="#laudes-benedictus">Zakalíi sín han</a>
+                            <a href="#laudes-intercessions">Ðɛxixo</a>
+                            <a href="#laudes-notre-pere">Tɔ́ mǐtɔn </a>
+                            <a href="#laudes-benediction">Nyɔna</a>
+                            <a href="#laudes-audio">Xóɖiɖɔ</a>
+                          </div>
+                    
+                          <!-- Main Content -->
+                          <div class="col-md-7 scrollable-element">
+                            <section id="laudes-invitatoire">
+                                <h5>Mylɔwema</h5>
+                                <p><strong>Ðɛhan 95:</strong> "Mi wá, mi nú mǐ ná ji han dó kpa susu nú Mawu Mavɔmavɔ, mi nú mǐ ná kpa susu nú só e hwlɛn mǐ gán é! Mi nú mǐ ná sɛkpɔ́ ɛ, bó ná dó kú n'i. kpodo han xweɖuɖu tɔn lɛ kpo!" </p>
+                            </section>
+                    
+                            <section id="laudes-hymne">
+                                <h5>Hanji</h5>
+                                <p><strong>Han Zǎnzǎn tɔn:</strong> "Weziza gbɛtɔ́ lɛ tɔn, Jezu, susu Tɔ́ ɔ tɔn, hwi mɛ e nɔ kɔ́n bo nɔ bló bɔ nǔ e tíìn lɛ é bǐ nɔ nyí nǔ mímɛ́ é."</p>
+                            </section>
+                    
+                            <section id="laudes-psaumes">
+                                <h5>Ðɛhan</h5>
+                                <p><strong>Ðɛhan 23:</strong> "Mawu Mavɔmavɔ wɛ nyí lɛngbɔ̌nyitɔ́ ce, nǔɖé na hwedó mì ǎ. É nɔ sɔ́ mì ɖó gbehan e mɛ ama ɖè é jí."</p>
+                                <p><strong>Ðɛhan 100:</strong> "Mi mɛ e ɖo ayǐkúngban jí lɛ́ɛ bǐ, mi sú xó kpódó awǎjíjɛ kpó nú Mawu Mavɔmavɔ, mi sɛn Mawu Mavɔmavɔ kpódó awǎjíjɛ kpó, mi wá gɔ̌n tɔn kpódó awǎjíjɛ han kpó!"</p>
+                            </section>
+                    
+                            <section id="laudes-lecture">
+                                <h5>Biblu Xixa</h5>
+                                <p><strong>Wɛnɖagbe Jaan tɔn 8, 12:</strong> "Jezu lɛ́ ɖɔ nú yě ɖɔ: 'Nyɛ wɛ nyí wěziza gbɛ ɔ́ tɔn. Mɛ e xwedó mì ɔ́ ná ɖi zɔnlin gbɔn ablu mɛ ǎ; .'"</p>
+                            </section>
+                    
+                            <section id="laudes-benedictus">
+                                <h5>Zakalíi (Benedikti) sín han</h5>
+                                <p>"Susu nú Mawu Mavɔmavɔ, Mawu Izlayɛ́li tɔn e nɔ ba togun tɔn kpɔ́n, bó nɔ hwlɛ́n ɛ gán é.
+                            </section>
+                    
+                            <section id="laudes-intercessions">
+                                <h5>Ðɛxixo</h5>
+                                <p>"Aklunɔ, azǎn elɔ e jɛ ji ɔ, hɛn mi ɖo weziza towe mɛ. Nu azinzɔnnɔ lɛ kpodo mɛ e ɖo wuvɛ se wɛ lɛ kpo ɔ, na fifa towe kpodo gbɔjɛ towe kpo."</p>
+                            </section>
+                    
+                            <section id="laudes-notre-pere">
+                                <h5>Tɔ́ mǐtɔn</h5>
+                                <p>"Tɔ́ mǐtɔn e ɖo sɛ́xwé ɔ́, nyǐkɔ towe ní nyí nǔ sísí, axɔ́súɖuɖu towe ní wá, jlǒ towe ní nyí wiwa ɖo ayǐkúngban jí lě e é nɔ nyí gbɔn ɖo sɛ́xwé é ɖɔhun..."</p>
+                            </section>
+                    
+                            <section id="laudes-benediction">
+                                <h5>Nyɔna</h5>
+                                <p>"Mawu Mavɔmavɔ ni xo ɖɛ dó mi jí bo hɛn mi. Nukúnmɛ tɔn ni kɔ́n dó mi jí bo na fífá tɔn mi."</p>
+                            </section>
+                            <audio class="audio-control" id="laudes-audio" controls>
+                                <source src="audio/first-reading.mp3" type="audio/mpeg">
+                                Votre navigateur ne supporte pas l'élément audio.
+                            </audio>
+                          </div>
+                        </div>
+                      </div>
+                    
+                </div>
+                <!-- 1ère Lecture -->
+                <div class="tab-pane fade" id="tierce" role="tabpanel">
+                    <div class="container-fluid">
+                        <div class="row">
+                          <!-- Side-Bar -->
+                          <div class="col-md-2 side-bar">
+                            <a href="#tierce-invitatoire">Ylɔxɔ</a>
+                            <a href="#tierce-hymne">Han</a>
+                            <a href="#tierce-psaumes">Ðɛhan</a>
+                            <a href="#tierce-lecture">Biblu Xixa</a>
+                            <a href="#tierce-benedictus">Zakalíi sín han</a>
+                            <a href="#tierce-intercessions">Ðɛxixo</a>
+                            <a href="#tierce-notre-pere">Tɔ́ mǐtɔn </a>
+                            <a href="#tierce-benediction">Nyɔna</a>
+                            <a href="#tierce-audio">Xóɖiɖɔ</a>
+                          </div>
+                    
+                          <!-- Main Content -->
+                          <div class="col-md-7 scrollable-element">
+                            <section id="tierce-invitatoire">
+                                <h5>Mylɔwema</h5>
+                                <p><strong>Ðɛhan 95:</strong> "Mi wá, mi nú mǐ ná ji han dó kpa susu nú Mawu Mavɔmavɔ, mi nú mǐ ná kpa susu nú só e hwlɛn mǐ gán é! Mi nú mǐ ná sɛkpɔ́ ɛ, bó ná dó kú n'i. kpodo han xweɖuɖu tɔn lɛ kpo!" </p>
+                            </section>
+                    
+                            <section id="tierce-hymne">
+                                <h5>Hanji</h5>
+                                <p><strong>Han Zǎnzǎn tɔn:</strong> "Weziza gbɛtɔ́ lɛ tɔn, Jezu, susu Tɔ́ ɔ tɔn, hwi mɛ e nɔ kɔ́n bo nɔ bló bɔ nǔ e tíìn lɛ é bǐ nɔ nyí nǔ mímɛ́ é."</p>
+                            </section>
+                    
+                            <section id="tierce-psaumes">
+                                <h5>Ðɛhan</h5>
+                                <p><strong>Ðɛhan 23:</strong> "Mawu Mavɔmavɔ wɛ nyí lɛngbɔ̌nyitɔ́ ce, nǔɖé na hwedó mì ǎ. É nɔ sɔ́ mì ɖó gbehan e mɛ ama ɖè é jí."</p>
+                                <p><strong>Ðɛhan 100:</strong> "Mi mɛ e ɖo ayǐkúngban jí lɛ́ɛ bǐ, mi sú xó kpódó awǎjíjɛ kpó nú Mawu Mavɔmavɔ, mi sɛn Mawu Mavɔmavɔ kpódó awǎjíjɛ kpó, mi wá gɔ̌n tɔn kpódó awǎjíjɛ han kpó!"</p>
+                            </section>
+                    
+                            <section id="tierce-lecture">
+                                <h5>Biblu Xixa</h5>
+                                <p><strong>Wɛnɖagbe Jaan tɔn 8, 12:</strong> "Jezu lɛ́ ɖɔ nú yě ɖɔ: 'Nyɛ wɛ nyí wěziza gbɛ ɔ́ tɔn. Mɛ e xwedó mì ɔ́ ná ɖi zɔnlin gbɔn ablu mɛ ǎ; .'"</p>
+                            </section>
+                    
+                            <section id="tierce-benedictus">
+                                <h5>Zakalíi (Benedikti) sín han</h5>
+                                <p>"Susu nú Mawu Mavɔmavɔ, Mawu Izlayɛ́li tɔn e nɔ ba togun tɔn kpɔ́n, bó nɔ hwlɛ́n ɛ gán é.
+                            </section>
+                    
+                            <section id="tierce-intercessions">
+                                <h5>Ðɛxixo</h5>
+                                <p>"Aklunɔ, azǎn elɔ e jɛ ji ɔ, hɛn mi ɖo weziza towe mɛ. Nu azinzɔnnɔ lɛ kpodo mɛ e ɖo wuvɛ se wɛ lɛ kpo ɔ, na fifa towe kpodo gbɔjɛ towe kpo."</p>
+                            </section>
+                    
+                            <section id="tierce-notre-pere">
+                                <h5>Tɔ́ mǐtɔn</h5>
+                                <p>"Tɔ́ mǐtɔn e ɖo sɛ́xwé ɔ́, nyǐkɔ towe ní nyí nǔ sísí, axɔ́súɖuɖu towe ní wá, jlǒ towe ní nyí wiwa ɖo ayǐkúngban jí lě e é nɔ nyí gbɔn ɖo sɛ́xwé é ɖɔhun..."</p>
+                            </section>
+                    
+                            <section id="tierce-benediction">
+                                <h5>Nyɔna</h5>
+                                <p>"Mawu Mavɔmavɔ ni xo ɖɛ dó mi jí bo hɛn mi. Nukúnmɛ tɔn ni kɔ́n dó mi jí bo na fífá tɔn mi."</p>
+                            </section>
+                            <audio class="audio-control" id="tierce-audio" controls>
+                                <source src="audio/first-reading.mp3" type="audio/mpeg">
+                                Votre navigateur ne supporte pas l'élément audio.
+                              </audio>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+                <!-- 2ème Lecture -->
+                <div class="tab-pane fade" id="sexte" role="tabpanel">
+                    <div class="container-fluid">
+                        <div class="row">
+                          <!-- Side-Bar -->
+                          <div class="col-md-2 side-bar">
+                            <a href="#sexte-invitatoire">Ylɔxɔ</a>
+                            <a href="#sexte-hymne">Han</a>
+                            <a href="#sexte-psaumes">Ðɛhan</a>
+                            <a href="#sexte-lecture">Biblu Xixa</a>
+                            <a href="#sexte-benedictus">Zakalíi sín han</a>
+                            <a href="#sexte-intercessions">Ðɛxixo</a>
+                            <a href="#sexte-notre-pere">Tɔ́ mǐtɔn </a>
+                            <a href="#sexte-benediction">Nyɔna</a>
+                            <a href="#sexte-audio">Xóɖiɖɔ</a>
+                          </div>
+                    
+                          <!-- Main Content -->
+                          <div class="col-md-7 scrollable-element">
+                            <section id="sexte-invitatoire">
+                                <h5>Mylɔwema</h5>
+                                <p><strong>Ðɛhan 95:</strong> "Mi wá, mi nú mǐ ná ji han dó kpa susu nú Mawu Mavɔmavɔ, mi nú mǐ ná kpa susu nú só e hwlɛn mǐ gán é! Mi nú mǐ ná sɛkpɔ́ ɛ, bó ná dó kú n'i. kpodo han xweɖuɖu tɔn lɛ kpo!" </p>
+                            </section>
+                    
+                            <section id="sexte-hymne">
+                                <h5>Hanji</h5>
+                                <p><strong>Han Zǎnzǎn tɔn:</strong> "Weziza gbɛtɔ́ lɛ tɔn, Jezu, susu Tɔ́ ɔ tɔn, hwi mɛ e nɔ kɔ́n bo nɔ bló bɔ nǔ e tíìn lɛ é bǐ nɔ nyí nǔ mímɛ́ é."</p>
+                            </section>
+                    
+                            <section id="sexte-psaumes">
+                                <h5>Ðɛhan</h5>
+                                <p><strong>Ðɛhan 23:</strong> "Mawu Mavɔmavɔ wɛ nyí lɛngbɔ̌nyitɔ́ ce, nǔɖé na hwedó mì ǎ. É nɔ sɔ́ mì ɖó gbehan e mɛ ama ɖè é jí."</p>
+                                <p><strong>Ðɛhan 100:</strong> "Mi mɛ e ɖo ayǐkúngban jí lɛ́ɛ bǐ, mi sú xó kpódó awǎjíjɛ kpó nú Mawu Mavɔmavɔ, mi sɛn Mawu Mavɔmavɔ kpódó awǎjíjɛ kpó, mi wá gɔ̌n tɔn kpódó awǎjíjɛ han kpó!"</p>
+                            </section>
+                    
+                            <section id="sexte-lecture">
+                                <h5>Biblu Xixa</h5>
+                                <p><strong>Wɛnɖagbe Jaan tɔn 8, 12:</strong> "Jezu lɛ́ ɖɔ nú yě ɖɔ: 'Nyɛ wɛ nyí wěziza gbɛ ɔ́ tɔn. Mɛ e xwedó mì ɔ́ ná ɖi zɔnlin gbɔn ablu mɛ ǎ; .'"</p>
+                            </section>
+                    
+                            <section id="sexte-benedictus">
+                                <h5>Zakalíi (Benedikti) sín han</h5>
+                                <p>"Susu nú Mawu Mavɔmavɔ, Mawu Izlayɛ́li tɔn e nɔ ba togun tɔn kpɔ́n, bó nɔ hwlɛ́n ɛ gán é.
+                            </section>
+                    
+                            <section id="sexte-intercessions">
+                                <h5>Ðɛxixo</h5>
+                                <p>"Aklunɔ, azǎn elɔ e jɛ ji ɔ, hɛn mi ɖo weziza towe mɛ. Nu azinzɔnnɔ lɛ kpodo mɛ e ɖo wuvɛ se wɛ lɛ kpo ɔ, na fifa towe kpodo gbɔjɛ towe kpo."</p>
+                            </section>
+                    
+                            <section id="sexte-notre-pere">
+                                <h5>Tɔ́ mǐtɔn</h5>
+                                <p>"Tɔ́ mǐtɔn e ɖo sɛ́xwé ɔ́, nyǐkɔ towe ní nyí nǔ sísí, axɔ́súɖuɖu towe ní wá, jlǒ towe ní nyí wiwa ɖo ayǐkúngban jí lě e é nɔ nyí gbɔn ɖo sɛ́xwé é ɖɔhun..."</p>
+                            </section>
+                    
+                            <section id="sexte-benediction">
+                                <h5>Nyɔna</h5>
+                                <p>"Mawu Mavɔmavɔ ni xo ɖɛ dó mi jí bo hɛn mi. Nukúnmɛ tɔn ni kɔ́n dó mi jí bo na fífá tɔn mi."</p>
+                            </section>
+                            <audio class="audio-control" id="sexte-audio" controls>
+                                <source src="audio/first-reading.mp3" type="audio/mpeg">
+                                Votre navigateur ne supporte pas l'élément audio.
+                              </audio>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+          
+                <!-- Evangile -->
+                <div class="tab-pane fade" id="none" role="tabpanel">
+                    <div class="container-fluid">
+                        <div class="row">
+                          <!-- Side-Bar -->
+                          <div class="col-md-2 side-bar">
+                            <a href="#none-invitatoire">Ylɔxɔ</a>
+                            <a href="#none-hymne">Han</a>
+                            <a href="#none-psaumes">Ðɛhan</a>
+                            <a href="#none-lecture">Biblu Xixa</a>
+                            <a href="#none-benedictus">Zakalíi sín han</a>
+                            <a href="#none-intercessions">Ðɛxixo</a>
+                            <a href="#none-notre-pere">Tɔ́ mǐtɔn </a>
+                            <a href="#none-benediction">Nyɔna</a>
+                            <a href="#none-audio">Xóɖiɖɔ</a>
+                          </div>
+                    
+                          <!-- Main Content -->
+                          <div class="col-md-7 scrollable-element">
+                            <section id="none-invitatoire">
+                                <h5>Mylɔwema</h5>
+                                <p><strong>Ðɛhan 95:</strong> "Mi wá, mi nú mǐ ná ji han dó kpa susu nú Mawu Mavɔmavɔ, mi nú mǐ ná kpa susu nú só e hwlɛn mǐ gán é! Mi nú mǐ ná sɛkpɔ́ ɛ, bó ná dó kú n'i. kpodo han xweɖuɖu tɔn lɛ kpo!" </p>
+                            </section>
+                    
+                            <section id="none-hymne">
+                                <h5>Hanji</h5>
+                                <p><strong>Han Zǎnzǎn tɔn:</strong> "Weziza gbɛtɔ́ lɛ tɔn, Jezu, susu Tɔ́ ɔ tɔn, hwi mɛ e nɔ kɔ́n bo nɔ bló bɔ nǔ e tíìn lɛ é bǐ nɔ nyí nǔ mímɛ́ é."</p>
+                            </section>
+                    
+                            <section id="none-psaumes">
+                                <h5>Ðɛhan</h5>
+                                <p><strong>Ðɛhan 23:</strong> "Mawu Mavɔmavɔ wɛ nyí lɛngbɔ̌nyitɔ́ ce, nǔɖé na hwedó mì ǎ. É nɔ sɔ́ mì ɖó gbehan e mɛ ama ɖè é jí."</p>
+                                <p><strong>Ðɛhan 100:</strong> "Mi mɛ e ɖo ayǐkúngban jí lɛ́ɛ bǐ, mi sú xó kpódó awǎjíjɛ kpó nú Mawu Mavɔmavɔ, mi sɛn Mawu Mavɔmavɔ kpódó awǎjíjɛ kpó, mi wá gɔ̌n tɔn kpódó awǎjíjɛ han kpó!"</p>
+                            </section>
+                    
+                            <section id="none-lecture">
+                                <h5>Biblu Xixa</h5>
+                                <p><strong>Wɛnɖagbe Jaan tɔn 8, 12:</strong> "Jezu lɛ́ ɖɔ nú yě ɖɔ: 'Nyɛ wɛ nyí wěziza gbɛ ɔ́ tɔn. Mɛ e xwedó mì ɔ́ ná ɖi zɔnlin gbɔn ablu mɛ ǎ; .'"</p>
+                            </section>
+                    
+                            <section id="none-benedictus">
+                                <h5>Zakalíi (Benedikti) sín han</h5>
+                                <p>"Susu nú Mawu Mavɔmavɔ, Mawu Izlayɛ́li tɔn e nɔ ba togun tɔn kpɔ́n, bó nɔ hwlɛ́n ɛ gán é.
+                            </section>
+                    
+                            <section id="none-intercessions">
+                                <h5>Ðɛxixo</h5>
+                                <p>"Aklunɔ, azǎn elɔ e jɛ ji ɔ, hɛn mi ɖo weziza towe mɛ. Nu azinzɔnnɔ lɛ kpodo mɛ e ɖo wuvɛ se wɛ lɛ kpo ɔ, na fifa towe kpodo gbɔjɛ towe kpo."</p>
+                            </section>
+                    
+                            <section id="none-notre-pere">
+                                <h5>Tɔ́ mǐtɔn</h5>
+                                <p>"Tɔ́ mǐtɔn e ɖo sɛ́xwé ɔ́, nyǐkɔ towe ní nyí nǔ sísí, axɔ́súɖuɖu towe ní wá, jlǒ towe ní nyí wiwa ɖo ayǐkúngban jí lě e é nɔ nyí gbɔn ɖo sɛ́xwé é ɖɔhun..."</p>
+                            </section>
+                    
+                            <section id="none-benediction">
+                                <h5>Nyɔna</h5>
+                                <p>"Mawu Mavɔmavɔ ni xo ɖɛ dó mi jí bo hɛn mi. Nukúnmɛ tɔn ni kɔ́n dó mi jí bo na fífá tɔn mi."</p>
+                            </section>
+                            <audio class="audio-control" id="none-audio" controls>
+                                <source src="audio/first-reading.mp3" type="audio/mpeg">
+                                Votre navigateur ne supporte pas l'élément audio.
+                              </audio>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+          
+                <!-- Homelie -->
+                <div class="tab-pane fade" id="vepres" role="tabpanel">
+                    <div class="container-fluid">
+                        <div class="row">
+                          <!-- Side-Bar -->
+                          <div class="col-md-2 side-bar">
+                            <a href="#vepres-invitatoire">Ylɔxɔ</a>
+                            <a href="#vepres-hymne">Han</a>
+                            <a href="#vepres-psaumes">Ðɛhan</a>
+                            <a href="#vepres-lecture">Biblu Xixa</a>
+                            <a href="#vepres-benedictus">Zakalíi sín han</a>
+                            <a href="#vepres-intercessions">Ðɛxixo</a>
+                            <a href="#vepres-notre-pere">Tɔ́ mǐtɔn </a>
+                            <a href="#vepres-benediction">Nyɔna</a>
+                            <a href="#vepres-audio">Xóɖiɖɔ</a>
+                          </div>
+                    
+                          <!-- Main Content -->
+                          <div class="col-md-7 scrollable-element">
+                            <section id="vepres-invitatoire">
+                                <h5>Mylɔwema</h5>
+                                <p><strong>Ðɛhan 95:</strong> "Mi wá, mi nú mǐ ná ji han dó kpa susu nú Mawu Mavɔmavɔ, mi nú mǐ ná kpa susu nú só e hwlɛn mǐ gán é! Mi nú mǐ ná sɛkpɔ́ ɛ, bó ná dó kú n'i. kpodo han xweɖuɖu tɔn lɛ kpo!" </p>
+                            </section>
+                    
+                            <section id="vepres-hymne">
+                                <h5>Hanji</h5>
+                                <p><strong>Han Zǎnzǎn tɔn:</strong> "Weziza gbɛtɔ́ lɛ tɔn, Jezu, susu Tɔ́ ɔ tɔn, hwi mɛ e nɔ kɔ́n bo nɔ bló bɔ nǔ e tíìn lɛ é bǐ nɔ nyí nǔ mímɛ́ é."</p>
+                            </section>
+                    
+                            <section id="vepres-psaumes">
+                                <h5>Ðɛhan</h5>
+                                <p><strong>Ðɛhan 23:</strong> "Mawu Mavɔmavɔ wɛ nyí lɛngbɔ̌nyitɔ́ ce, nǔɖé na hwedó mì ǎ. É nɔ sɔ́ mì ɖó gbehan e mɛ ama ɖè é jí."</p>
+                                <p><strong>Ðɛhan 100:</strong> "Mi mɛ e ɖo ayǐkúngban jí lɛ́ɛ bǐ, mi sú xó kpódó awǎjíjɛ kpó nú Mawu Mavɔmavɔ, mi sɛn Mawu Mavɔmavɔ kpódó awǎjíjɛ kpó, mi wá gɔ̌n tɔn kpódó awǎjíjɛ han kpó!"</p>
+                            </section>
+                    
+                            <section id="vepres-lecture">
+                                <h5>Biblu Xixa</h5>
+                                <p><strong>Wɛnɖagbe Jaan tɔn 8, 12:</strong> "Jezu lɛ́ ɖɔ nú yě ɖɔ: 'Nyɛ wɛ nyí wěziza gbɛ ɔ́ tɔn. Mɛ e xwedó mì ɔ́ ná ɖi zɔnlin gbɔn ablu mɛ ǎ; .'"</p>
+                            </section>
+                    
+                            <section id="vepres-benedictus">
+                                <h5>Zakalíi (Benedikti) sín han</h5>
+                                <p>"Susu nú Mawu Mavɔmavɔ, Mawu Izlayɛ́li tɔn e nɔ ba togun tɔn kpɔ́n, bó nɔ hwlɛ́n ɛ gán é.
+                            </section>
+                    
+                            <section id="vepres-intercessions">
+                                <h5>Ðɛxixo</h5>
+                                <p>"Aklunɔ, azǎn elɔ e jɛ ji ɔ, hɛn mi ɖo weziza towe mɛ. Nu azinzɔnnɔ lɛ kpodo mɛ e ɖo wuvɛ se wɛ lɛ kpo ɔ, na fifa towe kpodo gbɔjɛ towe kpo."</p>
+                            </section>
+                    
+                            <section id="vepres-notre-pere">
+                                <h5>Tɔ́ mǐtɔn</h5>
+                                <p>"Tɔ́ mǐtɔn e ɖo sɛ́xwé ɔ́, nyǐkɔ towe ní nyí nǔ sísí, axɔ́súɖuɖu towe ní wá, jlǒ towe ní nyí wiwa ɖo ayǐkúngban jí lě e é nɔ nyí gbɔn ɖo sɛ́xwé é ɖɔhun..."</p>
+                            </section>
+                    
+                            <section id="vepres-benediction">
+                                <h5>Nyɔna</h5>
+                                <p>"Mawu Mavɔmavɔ ni xo ɖɛ dó mi jí bo hɛn mi. Nukúnmɛ tɔn ni kɔ́n dó mi jí bo na fífá tɔn mi."</p>
+                            </section>
+                            <audio class="audio-control" id="vepres-audio" controls>
+                                <source src="audio/first-reading.mp3" type="audio/mpeg">
+                                Votre navigateur ne supporte pas l'élément audio.
+                              </audio>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+          
+                <!-- Evangile -->
+                <div class="tab-pane fade" id="complies" role="tabpanel">
+                    <div class="container-fluid">
+                        <div class="row">
+                          <!-- Side-Bar -->
+                          <div class="col-md-2 side-bar">
+                            <a href="#complies-invitatoire">Ylɔxɔ</a>
+                            <a href="#complies-hymne">Han</a>
+                            <a href="#complies-psaumes">Ðɛhan</a>
+                            <a href="#complies-lecture">Biblu Xixa</a>
+                            <a href="#complies-benedictus">Zakalíi sín han</a>
+                            <a href="#complies-intercessions">Ðɛxixo</a>
+                            <a href="#complies-notre-pere">Tɔ́ mǐtɔn </a>
+                            <a href="#complies-benediction">Nyɔna</a>
+                            <a href="#complies-audio">Xóɖiɖɔ</a>
+                          </div>
+                    
+                          <!-- Main Content -->
+                          <div class="col-md-7 scrollable-element">
+                            
+                            <section id="complies-invitatoire">
+                                <h5>Mylɔwema</h5>
+                                <p><strong>Ðɛhan 95:</strong> "Mi wá, mi nú mǐ ná ji han dó kpa susu nú Mawu Mavɔmavɔ, mi nú mǐ ná kpa susu nú só e hwlɛn mǐ gán é! Mi nú mǐ ná sɛkpɔ́ ɛ, bó ná dó kú n'i. kpodo han xweɖuɖu tɔn lɛ kpo!" </p>
+                            </section>
+                    
+                            <section id="complies-hymne">
+                                <h5>Hanji</h5>
+                                <p><strong>Han Zǎnzǎn tɔn:</strong> "Weziza gbɛtɔ́ lɛ tɔn, Jezu, susu Tɔ́ ɔ tɔn, hwi mɛ e nɔ kɔ́n bo nɔ bló bɔ nǔ e tíìn lɛ é bǐ nɔ nyí nǔ mímɛ́ é."</p>
+                            </section>
+                    
+                            <section id="complies-psaumes">
+                                <h5>Ðɛhan</h5>
+                                <p><strong>Ðɛhan 23:</strong> "Mawu Mavɔmavɔ wɛ nyí lɛngbɔ̌nyitɔ́ ce, nǔɖé na hwedó mì ǎ. É nɔ sɔ́ mì ɖó gbehan e mɛ ama ɖè é jí."</p>
+                                <p><strong>Ðɛhan 100:</strong> "Mi mɛ e ɖo ayǐkúngban jí lɛ́ɛ bǐ, mi sú xó kpódó awǎjíjɛ kpó nú Mawu Mavɔmavɔ, mi sɛn Mawu Mavɔmavɔ kpódó awǎjíjɛ kpó, mi wá gɔ̌n tɔn kpódó awǎjíjɛ han kpó!"</p>
+                            </section>
+                    
+                            <section id="complies-lecture">
+                                <h5>Biblu Xixa</h5>
+                                <p><strong>Wɛnɖagbe Jaan tɔn 8, 12:</strong> "Jezu lɛ́ ɖɔ nú yě ɖɔ: 'Nyɛ wɛ nyí wěziza gbɛ ɔ́ tɔn. Mɛ e xwedó mì ɔ́ ná ɖi zɔnlin gbɔn ablu mɛ ǎ; .'"</p>
+                            </section>
+                    
+                            <section id="complies-benedictus">
+                                <h5>Zakalíi (Benedikti) sín han</h5>
+                                <p>"Susu nú Mawu Mavɔmavɔ, Mawu Izlayɛ́li tɔn e nɔ ba togun tɔn kpɔ́n, bó nɔ hwlɛ́n ɛ gán é.
+                            </section>
+                    
+                            <section id="complies-intercessions">
+                                <h5>Ðɛxixo</h5>
+                                <p>"Aklunɔ, azǎn elɔ e jɛ ji ɔ, hɛn mi ɖo weziza towe mɛ. Nu azinzɔnnɔ lɛ kpodo mɛ e ɖo wuvɛ se wɛ lɛ kpo ɔ, na fifa towe kpodo gbɔjɛ towe kpo."</p>
+                            </section>
+                    
+                            <section id="complies-notre-pere">
+                                <h5>Tɔ́ mǐtɔn</h5>
+                                <p>"Tɔ́ mǐtɔn e ɖo sɛ́xwé ɔ́, nyǐkɔ towe ní nyí nǔ sísí, axɔ́súɖuɖu towe ní wá, jlǒ towe ní nyí wiwa ɖo ayǐkúngban jí lě e é nɔ nyí gbɔn ɖo sɛ́xwé é ɖɔhun..."</p>
+                            </section>
+                    
+                            <section id="complies-benediction">
+                                <h5>Nyɔna</h5>
+                                <p>"Mawu Mavɔmavɔ ni xo ɖɛ dó mi jí bo hɛn mi. Nukúnmɛ tɔn ni kɔ́n dó mi jí bo na fífá tɔn mi."</p>
+                            </section>
+                            <audio class="audio-control" id="complies-audio" controls>
+                                <source src="audio/first-reading.mp3" type="audio/mpeg">
+                                Votre navigateur ne supporte pas l'élément audio.
+                              </audio>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+    
+        // Ouvrir ou fermer la sidebar avec le bouton
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    
+        // Fermer la sidebar quand on clique à l'extérieur
+        document.addEventListener('click', (event) => {
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnToggleButton = toggleSidebar.contains(event.target);
+    
+            // Si le clic n'est pas sur la sidebar ou le bouton, fermer la sidebar
+            if (!isClickInsideSidebar && !isClickOnToggleButton) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Fonction pour obtenir la date d'aujourd'hui
+    function getTodayDate() {
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return today.toLocaleDateString('fr-FR', options);
+    }
+
+    // Fonction pour déterminer le jour liturgique
+    function getLiturgicalDay(date) {
+        // Simuler un jour liturgique en fonction de la date (exemple statique)
+        const liturgicalDays = {
+            "Azǎn ɛnɛgɔ́ ɔ́ sun tɛ́nnɛgɔ́ ɔ́ xwè 2025 tɔn mɛ": "Azǎn ɛnɛgɔ́ ɔ́ gbè ɖò Epiphanie gudo - Xwè C",
+            "2025-01-10": "Vɛnsée ɖò Epiphanie gudo - Xwè C"
+        };
+        const formattedDate = date.toISOString().split('T')[0];
+        return liturgicalDays[formattedDate] || "È tuùn sinsɛnzán ɔ ǎ .";
+    }
+
+    // Initialisation de la page avec la date d'aujourd'hui
+    const today = new Date();
+    document.getElementById('current-date').textContent = getTodayDate();
+    document.getElementById('liturgical-day').textContent = getLiturgicalDay(today);
+
+   
+    </script>
+    <script src="script.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liturgie Locale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="calender.css">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #045c04;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            height: 100vh;
+            background-image: url('eglise.jpg'); /* Remplacez par le chemin de votre image */
+            background-size: cover; /* Ajuste l'image pour qu'elle couvre toute la zone */
+            background-position: center; /* Centrer l'image */
+            background-repeat: no-repeat; /* Empêche la répétition de l'image */
+        }
+        .haut{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .table-container {
+            margin-bottom: 20px;
+        }
+        .reading-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #liturgicalTabsContent {
+            height: calc(100vh - 270px);
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                height: 100%;
+                width: 200px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 10px;
+                height: 100%;
+            }
+            .table-container table {
+                font-size: 0.9rem;
+            }
+            #liturgicalTabsContent {
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        }
+
+        .tab-content {
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+        #liturgicalTabs{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .nav-link.active{
+        background-color: #045c04 !important;
+        color: #ffffff !important;
+    }
+    .nav-link{
+        color: #000;
+    }
+    .nav-link:hover{
+        color: #045c04;
+    }
+    h5 {
+      color: #045c04;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .text-liturgical {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.8;
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+    .audio-control {
+      margin-bottom: 30px;
+    }
+    .btn-outline-secondary{
+        color: #045c04;
+        border-bottom: #045c04;
+    }
+    .btn-outline-secondary:hover{
+        background-color: #045c04;
+        color: #FFF;
+        border-bottom: #045c04;
+    }
+
+    .calendar-section {
+    font-family: Arial, sans-serif;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendar-btn {
+    background-color: #045c04;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.calendar-btn:hover {
+    background-color: #045c04;
+}
+
+.dropdown .calendar-dropdown-btn {
+    background-color: #f8f9fa;
+    color: black;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    font-size: 0.8rem;
+}
+
+.calendar-table thead th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.calendar-table tbody td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+}
+
+.calendar-table tbody td input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.calendar-table tbody td a {
+    color: #045c04;
+    text-decoration: none;
+}
+
+.calendar-table tbody td a:hover {
+    text-decoration: underline;
+}
+
+.calendar-table tbody td span {
+    font-size: 14px;
+}
+
+.carre {
+    width: 12px; /* Largeur du carré */
+    height: 12px; /* Hauteur du carré */
+    background-color: #FFF; /* Couleur de fond du carré */
+    border: #343a40 1px solid;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <h4 class="text-center py-3">Sinsɛnzɔ́ Toxo ɔ Tɔn</h4>
+            <a href="index.html">Mǐsa ɔ </a>
+            <a href="heure.html">Ganxixo lɛ</a>
+            <a href="#">Biblu</a>
+            <hr>
+            <!-- <a href="affiche.html">Afixá</a> -->
+            <a href="" class="active">Azǎnwema</a>
+            <a href="apropos.html">Nùɖé</a>
+            <a href="contact.html">Ylɔ̌</a>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="content flex-grow-1">
+            <!-- Navbar for smaller screens -->
+            <div class="d-md-none d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm" id="toggleSidebar">☰ Menu</button>
+                <h4 class="mb-0">Liturgie Locale</h4>
+            </div>
+
+            <div class="haut">
+             <!-- Date and Title -->
+             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-0" id="date-selectionnee"></h4>
+                    <p class="text-muted mb-0">S. Pierre Canisius, prêtre, docteur de l'Église</p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <button class="btn btn-outline-secondary btn-sm" >Aklunɔzángbe e jǎwé é</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="ouvrir-calendrier">Azàn ɖevo lɛ</button>
+                    <!-- <button class="btn btn-outline-secondary btn-sm">Gbè ɖevo</button> -->
+                </div>
+                <!-- Calendrier (initialement masqué) -->
+                <div id="calendrier-modal" class="hidden">
+                  <div id="calendrier">
+                    <div id="header-calendrier">
+                        <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="prev">&larr;</button>
+                        <span id="moisEtAnnee"></span>
+                        <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="next">&rarr;</button>
+                    </div>
+                    <div id="jours"></div>
+                    <div id="dates"></div>
+                  </div>
+                </div>
+              </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button id="mois-prev" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">&larr; décembre 2024</button>
+                <h4 class="text-center mb-4">Azǎnwema</h4>
+                <button id="mois-next" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">février 2025 &rarr;</button>
+            </div>
+            
+            </div>
+            
+            <section class="calendar-section">
+                <!-- <div class="calendar-header">
+                    <div class="dropdown">
+                        <button class="calendar-dropdown-btn">Calendrier romain ▼</button>
+                    </div>
+                    <button class="calendar-btn">Note sur les calendriers</button>
+                </div> -->
+                <h3 id="currentMonth">JANVIER 2025</h3>
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Événement</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01 janvier</td>
+                            <td>
+                                <input type="checkbox" />
+                                Sainte Marie, Mère de Dieu<br>
+                                <strong>Solemnité</strong>
+                            </td>
+                            <td>
+                                <a href="#">La messe</a> | <a href="#">Les heures</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>02 janvier</td>
+                            <td>
+                                <input type="checkbox" />
+                                S. Basile le Grand et S. Grégoire de Nazianze, évêques et docteurs de l'Église<br>
+                                <strong>Mémoire</strong>
+                            </td>
+                            <td>
+                                <a href="#">La messe</a> | <a href="#">Les heures</a>
+                            </td>
+                        </tr>
+                        <!-- Ajoutez d'autres lignes pour les dates -->
+                        <tr>
+                            <td>13 janvier</td>
+                            <td>
+                                <div class="carre"></div>
+                                <span style="color: green;">●</span> lundi, 1ère Semaine du Temps Ordinaire (Psautier I)<br>
+                                S. Hilaire, évêque et docteur de l'Église<br>
+                                <strong>Mémoire facultative</strong>
+                            </td>
+                            <td>
+                                <a href="#">La messe</a> | <a href="#">Les heures</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>13 janvier</td>
+                            <td>
+                                <input type="checkbox" />
+                                <span style="color: green;">●</span> lundi, 1ère Semaine du Temps Ordinaire (Psautier I)<br>
+                                S. Hilaire, évêque et docteur de l'Église<br>
+                                <strong>Mémoire facultative</strong>
+                            </td>
+                            <td>
+                                <a href="#">La messe</a> | <a href="#">Les heures</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>13 janvier</td>
+                            <td>
+                                <input type="checkbox" />
+                                <span style="color: green;">●</span> lundi, 1ère Semaine du Temps Ordinaire (Psautier I)<br>
+                                S. Hilaire, évêque et docteur de l'Église<br>
+                                <strong>Mémoire facultative</strong>
+                            </td>
+                            <td>
+                                <a href="#">La messe</a> | <a href="#">Les heures</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>13 janvier</td>
+                            <td>
+                                <input type="checkbox" />
+                                <span style="color: green;">●</span> lundi, 1ère Semaine du Temps Ordinaire (Psautier I)<br>
+                                S. Hilaire, évêque et docteur de l'Église<br>
+                                <strong>Mémoire facultative</strong>
+                            </td>
+                            <td>
+                                <a href="#">La messe</a> | <a href="#">Les heures</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </section>
+            
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+    
+        // Ouvrir ou fermer la sidebar avec le bouton
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    
+        // Fermer la sidebar quand on clique à l'extérieur
+        document.addEventListener('click', (event) => {
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnToggleButton = toggleSidebar.contains(event.target);
+    
+            // Si le clic n'est pas sur la sidebar ou le bouton, fermer la sidebar
+            if (!isClickInsideSidebar && !isClickOnToggleButton) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Fonction pour obtenir la date d'aujourd'hui
+    function getTodayDate() {
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return today.toLocaleDateString('fr-FR', options);
+    }
+
+    // Fonction pour déterminer le jour liturgique
+    function getLiturgicalDay(date) {
+        // Simuler un jour liturgique en fonction de la date (exemple statique)
+        const liturgicalDays = {
+            "Azǎn ɛnɛgɔ́ ɔ́ sun tɛ́nnɛgɔ́ ɔ́ xwè 2025 tɔn mɛ": "Azǎn ɛnɛgɔ́ ɔ́ gbè ɖò Epiphanie gudo - Xwè C",
+            "2025-01-10": "Vɛnsée ɖò Epiphanie gudo - Xwè C"
+        };
+        const formattedDate = date.toISOString().split('T')[0];
+        return liturgicalDays[formattedDate] || "È tuùn sinsɛnzán ɔ ǎ .";
+    }
+
+    // Initialisation de la page avec la date d'aujourd'hui
+    const today = new Date();
+    document.getElementById('current-date').textContent = getTodayDate();
+    document.getElementById('liturgical-day').textContent = getLiturgicalDay(today);
+
+
+    </script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const mois = ["Aluùnsùn", "AFATƆ́N", "Xwè", "Azan", "Liyasùn", "Jùn", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
+    
+      const currentMonthElement = document.getElementById("currentMonth");
+      const prevButton = document.getElementById("mois-prev");
+      const nextButton = document.getElementById("mois-next");
+    
+      let currentDate = new Date();
+    
+      // Mettre à jour l'affichage du mois actuel et des boutons
+      function updateCalendar() {
+        const moisIndex = currentDate.getMonth();
+        const annee = currentDate.getFullYear();
+    
+        // Mois et année actuels
+        currentMonthElement.textContent = `${mois[moisIndex]} ${annee}`;
+    
+        // Mois précédent
+        const prevDate = new Date(annee, moisIndex - 1, 1);
+        prevButton.textContent = `← ${mois[prevDate.getMonth()]} ${prevDate.getFullYear()}`;
+    
+        // Mois suivant
+        const nextDate = new Date(annee, moisIndex + 1, 1);
+        nextButton.textContent = `${mois[nextDate.getMonth()]} ${nextDate.getFullYear()} →`;
+      }
+    
+      // Naviguer vers le mois précédent
+      prevButton.addEventListener("click", function () {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateCalendar();
+      });
+    
+      // Naviguer vers le mois suivant
+      nextButton.addEventListener("click", function () {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateCalendar();
+      });
+    
+      // Initialiser l'affichage
+      updateCalendar();
+    });
+    
+      </script>
+<script src="script.js"></script>
+    
+</body>
+</html>

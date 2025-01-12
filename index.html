@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liturgie Locale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="calender.css">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #045c04;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            height: 100vh;
+            background-image: url('eglise.jpg'); /* Remplacez par le chemin de votre image */
+            background-size: cover; /* Ajuste l'image pour qu'elle couvre toute la zone */
+            background-position: center; /* Centrer l'image */
+            background-repeat: no-repeat; /* Empêche la répétition de l'image */
+        }
+        .haut{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .table-container {
+            margin-bottom: 20px;
+        }
+        .reading-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #liturgicalTabsContent {
+            height: calc(100vh - 270px);
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                height: 100%;
+                width: 200px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 10px;
+                height: 100%;
+            }
+            .table-container table {
+                font-size: 0.9rem;
+            }
+            #liturgicalTabsContent {
+            padding: 15px;
+            border: 1px solid #ddd; /* Pour démarquer visuellement la section */
+        }
+        }
+
+        .tab-content {
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+        #liturgicalTabs{
+            background-color: #f8f9fa97;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .nav-link.active{
+        background-color: #045c04 !important;
+        color: #ffffff !important;
+    }
+    .nav-link{
+        color: #000;
+    }
+    .nav-link:hover{
+        color: #045c04;
+    }
+    h5 {
+      color: #045c04;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .text-liturgical {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.8;
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+    .audio-control {
+      margin-bottom: 30px;
+    }
+    .btn-outline-secondary{
+        color: #045c04;
+        border-bottom: #045c04;
+    }
+    .btn-outline-secondary:hover{
+        background-color: #045c04;
+        color: #FFF;
+        border-bottom: #045c04;
+    }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <h4 class="text-center py-3">Sinsɛnzɔ́ Toxo ɔ Tɔn</h4>
+            <a href="" class="active">Mǐsa ɔ </a>
+            <a href="heure.html">Ganxixo lɛ</a>
+            <a href="#">Biblu</a>
+            <hr>
+            <!-- <a href="affiche.html">Afixá</a> -->
+            <a href="calendrier.html">Azǎnwema</a>
+            <a href="apropos.html">Nùɖé</a>
+            <a href="contact.html">Ylɔ̌</a>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="content flex-grow-1">
+            <!-- Navbar for smaller screens -->
+            <div class="d-md-none d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm" id="toggleSidebar">☰ Menu</button>
+                <h4 class="mb-0">Liturgie Locale</h4>
+            </div>
+
+            <div class="haut">
+                <!-- Date and Title -->
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-0" id="date-selectionnee"></h4>
+                    <p class="text-muted mb-0">S. Pierre Canisius, prêtre, docteur de l'Église</p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <button class="btn btn-outline-secondary btn-sm" >Aklunɔzángbe e jǎwé é</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="ouvrir-calendrier">Azàn ɖevo lɛ</button>
+                    <!-- <button class="btn btn-outline-secondary btn-sm">Gbè ɖevo</button> -->
+                </div>
+                <!-- Calendrier (initialement masqué) -->
+                <div id="calendrier-modal" class="hidden">
+                  <div id="calendrier">
+                    <div id="header-calendrier">
+                      <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="prev">&larr;</button>
+                      <span id="moisEtAnnee"></span>
+                      <button class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" id="next">&rarr;</button>
+                    </div>
+                    <div id="jours"></div>
+                    <div id="dates"></div>
+                  </div>
+                </div>
+              </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button id="hier" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">&larr; Sɔ́</button>
+                <h4 class="text-center mb-4">Wema sinsɛn tɔn lɛ</h4>
+                <button id="demain" class="btn btn-sm" style="background-color: #045c04 !important; color: #FFF;">Sɔ́ &rarr;</button>
+            </div>
+            </div>
+            <ul class="nav nav-tabs justify-content-between" id="liturgicalTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">Bǐ</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="first-reading-tab" data-bs-toggle="tab" data-bs-target="#first-reading" type="button" role="tab">Nuxixa Nukɔntɔn</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="second-reading-tab" data-bs-toggle="tab" data-bs-target="#second-reading" type="button" role="tab">Nuxixa Wegɔ ɔ</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="psalm-tab" data-bs-toggle="tab" data-bs-target="#psalm" type="button" role="tab">Ðɛhan</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="gospel-tab" data-bs-toggle="tab" data-bs-target="#gospel" type="button" role="tab">Wɛnɖagbe</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="homily-tab" data-bs-toggle="tab" data-bs-target="#homily" type="button" role="tab">Xóɖiɖɔ</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="pu-tab" data-bs-toggle="tab" data-bs-target="#pu" type="button" role="tab">Ðɛxixo gbɛ ɔ bi tɔn</button>
+                </li>
+              </ul>
+
+            <div class="tab-content" id="liturgicalTabsContent">
+                <!-- Tous -->
+                <div class="tab-pane fade show active" id="all" role="tabpanel">
+                    <div class="d-flex justify-content-between">
+                        <h5>Nuxixa Nukɔntɔn</h5>
+                        <button class="copy-btn btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" onclick="copyAllText(this)">Kpɔ́n</button>
+                      </div>
+                  <div>
+                      <p class="text-liturgical">
+                          “Mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌” (1 Jn 4.19 – 5.4).
+                      </p>
+                      <p class="text-liturgical">
+                          Xà wema nukɔntɔn e Sinsɛn Jaan wlan é mɛ <br><br>
+                        Mɛvívɛ́ná,<br>
+                        mǐ yí wǎn nú mɛ ɖó Mawu ɖésúnɔ wɛ yí wǎn nú mǐ jɛ nukɔn.<br>
+                          Ényí mɛɖé ɖɔ émí yí wǎn nú Mawu, bó ka gbɛ́ wǎn nú nɔví tɔn hǔn, adingbannɔ wɛ é nyí.<br>
+                          Đó mɛ e ma yí wǎn nú nɔví tɔn e mɔ wɛ é ɖe ɔ́ ǎ ɔ́, é sixú yí wǎn nú Mawu e é ma mɔ ǎ ɔ́ ǎ.<br>
+                          Sɛ́n e Klísu zɔ́n mǐ ɔ́ ɖíe: mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌.<br><br>
+                          Mɛ e ɖi nǔ ɖɔ Jezu wɛ nyí Klísu ɔ́, Mawu wɛ ji i;<br>
+                          mɛ e yí wǎn nú Tɔ́ Vǐ ɔ́ ɔ́, é yí wǎn nú Vǐ e é ji ɔ́ lɔmɔ̌.<br>
+                          Lě e mǐ nɔ tunwun ɖɔ mǐ yí wǎn nú vǐ Mawu tɔn lɛ́ɛ gbɔn ɔ́ ɖíe:<br>
+                          hwenu e mǐ yí wǎn nú Mawu, bó nyi sɛ́n tɔn lɛ́ɛ é.<br>
+                          Đó wǎn yíyí nú Mawu wɛ nyí ɖɔ è nǐ nyi sɛ́n tɔn lɛ́ɛ;<br>
+                          sɛ́n tɔn lɛ́ɛ ka nyí agban bo kpɛn mǐ ǎ, ɖó mɛ e nyí Mawu ví lɛ́ɛ bǐ wɛ nɔ ɖu ɖo gbɛ ɔ́ jí.<br>
+                          Din ɔ́, ɖuɖeji e ɖo gbɛ ɔ́ jí ɔ́ wɛ nyí nǔɖiɖi mǐtɔn.<br><br>
+                        – Xó Aklúnɔ tɔn.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                  </div>
+                  <div>
+                      <h5>Nuxixa Wegɔ ɔ</h5>
+                      <p class="text-liturgical">
+                          “Mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌” (1 Jn 4.19 – 5.4).
+                      </p>
+                      <p class="text-liturgical">
+                          Xà wema nukɔntɔn e Sinsɛn Jaan wlan é mɛ <br><br>
+                        Mɛvívɛ́ná,<br>
+                        mǐ yí wǎn nú mɛ ɖó Mawu ɖésúnɔ wɛ yí wǎn nú mǐ jɛ nukɔn.<br>
+                          Ényí mɛɖé ɖɔ émí yí wǎn nú Mawu, bó ka gbɛ́ wǎn nú nɔví tɔn hǔn, adingbannɔ wɛ é nyí.<br>
+                          Đó mɛ e ma yí wǎn nú nɔví tɔn e mɔ wɛ é ɖe ɔ́ ǎ ɔ́, é sixú yí wǎn nú Mawu e é ma mɔ ǎ ɔ́ ǎ.<br>
+                          Sɛ́n e Klísu zɔ́n mǐ ɔ́ ɖíe: mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌.<br><br>
+                          Mɛ e ɖi nǔ ɖɔ Jezu wɛ nyí Klísu ɔ́, Mawu wɛ ji i;<br>
+                          mɛ e yí wǎn nú Tɔ́ Vǐ ɔ́ ɔ́, é yí wǎn nú Vǐ e é ji ɔ́ lɔmɔ̌.<br>
+                          Lě e mǐ nɔ tunwun ɖɔ mǐ yí wǎn nú vǐ Mawu tɔn lɛ́ɛ gbɔn ɔ́ ɖíe:<br>
+                          hwenu e mǐ yí wǎn nú Mawu, bó nyi sɛ́n tɔn lɛ́ɛ é.<br>
+                          Đó wǎn yíyí nú Mawu wɛ nyí ɖɔ è nǐ nyi sɛ́n tɔn lɛ́ɛ;<br>
+                          sɛ́n tɔn lɛ́ɛ ka nyí agban bo kpɛn mǐ ǎ, ɖó mɛ e nyí Mawu ví lɛ́ɛ bǐ wɛ nɔ ɖu ɖo gbɛ ɔ́ jí.<br>
+                          Din ɔ́, ɖuɖeji e ɖo gbɛ ɔ́ jí ɔ́ wɛ nyí nǔɖiɖi mǐtɔn.<br><br>
+                        – Xó Aklúnɔ tɔn.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                  </div>
+                  <!-- Add other sections in "Tous" -->
+                      <div>
+                          <h5>Ðɛhan 11</h5>
+                          <p class="text-liturgical">
+                              (71 (72), 1-2, 14.15bc, 17) <br>
+                              R/ Axɔ́sú lɛ́ɛ bǐ ná jɛ kpo ɖo nukɔn tɔn, to lɛ́ɛ bǐ ná sɛn ɛ. (Ðɛ 71, 11)
+                          </p>
+                          <p class="text-liturgical">
+                              Mawu, nǎ hlɔ̌nhlɔ́n towe lɛ́ɛ axɔ́sú ɔ́; <br>
+                          axɔ́sú ví élɔ́ ɔ́, hwɛjijɔ towe wɛ é ná.<br>
+                          É ní kpa acɛ nú togun towe kpó hwɛjijɔ kpó;<br>
+                          é ní wa nǔ jlɔ́jlɔ́ nú mɛ e ma ɖó taɖagbe ǎ é! <br><br>
+                          É nɔ́ hwlɛ́n yě gán sín yadonumɛ sí, é nɔ́ xɔ yě sín dǎkaxixo sí;<br>
+                          hun yětɔn xɔ akwɛ́ ɖo nukún tɔn mɛ.<br>
+                          Mǐ ná xo ɖɛ dó ta tɔn mɛ magbokɔ;<br>
+                          Ayǐhɔ́ngbe ayǐhɔ́ngbe ɔ́, mǐ ná xo ɖɛ dó jǐ tɔn.<br><br>
+                          Nyǐkɔ tɔn ní nɔ te káká sɔ́yi;<br>
+                          hwe glɔ́ fí ɔ́, nyǐkɔ tɔn ní nɔ te!<br>
+                          É wɛ ní xo ɖɛ dó akɔta e ɖo ayǐkúngban jí lɛ́ɛ bǐ jí;<br>
+                          To lɛ́ɛ bǐ ní ylɔ́ ɛ ɖɔ nyɔ̌nánɔ! <br>
+                          </p>
+                          <audio class="audio-control" controls>
+                            <source src="audio/first-reading.mp3" type="audio/mpeg">
+                            Votre navigateur ne supporte pas l'élément audio.
+                          </audio>
+                      </div>
+              
+                    <!-- Evangile -->
+                      <div>
+                          <h5>Wɛnɖagbe</h5>
+                          <p class="text-liturgical">
+                              "Égbé ɔ́, nǔ e è wlán dó Mawuxówéma ɔ́ mɛ ɔ́ jɛ" (Lk 4,14-22a) <br>
+                          </p>
+                          <p class="acclamation">
+                             <strong>Aleluya, Aleluya.</strong> <br>
+                              Mawu Mavɔmavɔ sɛ́ mì dó ɖɔ má dó wɛn ɖagbe wamamɔnɔ lɛ́ɛ;<br>
+                              mi jlá kannumɔ lɛ́ɛ ɖɔ è jó yě dó.<br>
+                              <strong>Aleluya.</strong> (kpɔ́n Lk 4:18)<br>
+                          </p>
+                          <p class="text-liturgical">
+                              Wɛn Ɖagbe Jezu Klísu tɔn lě e Mɛ mímɛ́ Luki wlán gbɔn é<br><br>
+                              Hwenɛnu ɔ, <br>
+                              hwenu e Jezu, ɖò hlɔ̌nhlɔ́n Yɛsinsɛn tɔn mɛ é,<br>
+                              é lɛ́ kɔ yi Galilée;<br>
+                              Nyǐkɔ tɔn gba kpé xá ɔ́ bǐ mɛ.<br>
+                              É nɔ kplɔ́n nǔ mɛ ɖo kplɔ́ngbasá lɛ́ɛ;<br>
+                              bɔ mɛ bǐ nɔ kpa susu n'i.<br>
+                              É wá Nazalɛ́ti fí e é su ɖe é.<br>
+                              É byɔ́ kplɔ́ngbasá gbɔjɛzán Jwifu lɛ́ɛ tɔn gbe, lě e é ko nɔ bló gbɔn é.<br>
+                              é sí te bó ná xa nǔ.<br>
+                              È sɔ́ gbeyiɖɔ Ezayíi sín wema ɔ jó n’i.<br>
+                              É hun wema ɔ, bo mɔ fí e è wlan dó é:<br>
+                              Yɛ Mawu Mavɔmavɔ tɔn ɖo jǐ ce <br>
+                              ɖó Mawu Mavɔmavɔ wɛ kɔn ami dó ta nú mì.<br>
+                              É sɛ́ mì dó ɖɔ má dó Wɛn Ɖagbe wamamɔnɔ lɛ́ɛ;<br>
+                              mi jla mɛ e wlí kannumɔ lɛ́ɛ ɖɔ è jó yě dó;<br>
+                              bó ɖɔ nú nukúntíntɔ́nnɔ lɛ́ɛ ɖɔ yě ní mɔ nukúnnú;<br>
+                              bó ná ɖe mɛ e táfú wɛ è ɖe lɛ́ɛ sín kannumɔgbenu;<br>
+                              jla xwè ɖagbe ɖé <br>
+                              Aklúnɔ wɛ ná ɛ.<br>
+                              Jezu sú wema ɔ, bo sɔ́ jó nú mɛsɛntɔ́ ɔ, lobo jínjɔ́n ayǐ.<br>
+                              Mɛ e ɖo kplɔ́ngbasá lɛ́ɛ bǐ sín nukún ɖo jǐ tɔn.<br>
+                              Énɛ́ gúdo ɔ́, é jɛ ɖiɖɔ nú yě jí ɖɔ:<br>
+                              “Égbé ɔ, nǔ e è wlan dó Mawuxówema ɔ mɛ ɔ jɛ .<br>
+                              e a sè dìn é. »<br>
+                              Mɛ bǐ ɖekúnnu n’i <br>
+                              bɔ wǔjɔmɛ xó e nɔ tɔ́n sín nu tɔn mɛ lɛ́ɛ nɔ́ kpácá yě.<br><br>
+                              
+                              – Mi nú mǐ ní kpa susu nú Mawuxó ɔ́.
+                          </p>
+                          <audio class="audio-control" controls>
+                            <source src="audio/first-reading.mp3" type="audio/mpeg">
+                            Votre navigateur ne supporte pas l'élément audio.
+                          </audio>
+                      </div>
+                </div>
+                <!-- 1ère Lecture -->
+                <div class="tab-pane fade" id="first-reading" role="tabpanel">
+                  <div class="copy-text">
+                      <div class="d-flex justify-content-between">
+                        <h5>Nuxixa Nukɔntɔn</h5>
+                        <button class="copy-btn btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" onclick="copyAllText(this)">Kpɔ́n</button>
+                      </div>
+                      <p class="text-liturgical">
+                          <span>“Mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌” (1 Jn 4.19 – 5.4).</span>
+                          <button class="copy-btn" data-section="first-reading">
+                              <i class="fas fa-copy"></i>
+                          </button>
+                      </p>
+                      <p class="text-liturgical">
+                          Xà wema nukɔntɔn e Sinsɛn Jaan wlan é mɛ <br><br>
+                        Mɛvívɛ́ná,<br>
+                        mǐ yí wǎn nú mɛ ɖó Mawu ɖésúnɔ wɛ yí wǎn nú mǐ jɛ nukɔn.<br>
+                          Ényí mɛɖé ɖɔ émí yí wǎn nú Mawu, bó ka gbɛ́ wǎn nú nɔví tɔn hǔn, adingbannɔ wɛ é nyí.<br>
+                          Đó mɛ e ma yí wǎn nú nɔví tɔn e mɔ wɛ é ɖe ɔ́ ǎ ɔ́, é sixú yí wǎn nú Mawu e é ma mɔ ǎ ɔ́ ǎ.<br>
+                          Sɛ́n e Klísu zɔ́n mǐ ɔ́ ɖíe: mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌.<br><br>
+                          Mɛ e ɖi nǔ ɖɔ Jezu wɛ nyí Klísu ɔ́, Mawu wɛ ji i;<br>
+                          mɛ e yí wǎn nú Tɔ́ Vǐ ɔ́ ɔ́, é yí wǎn nú Vǐ e é ji ɔ́ lɔmɔ̌.<br>
+                          Lě e mǐ nɔ tunwun ɖɔ mǐ yí wǎn nú vǐ Mawu tɔn lɛ́ɛ gbɔn ɔ́ ɖíe:<br>
+                          hwenu e mǐ yí wǎn nú Mawu, bó nyi sɛ́n tɔn lɛ́ɛ é.<br>
+                          Đó wǎn yíyí nú Mawu wɛ nyí ɖɔ è nǐ nyi sɛ́n tɔn lɛ́ɛ;<br>
+                          sɛ́n tɔn lɛ́ɛ ka nyí agban bo kpɛn mǐ ǎ, ɖó mɛ e nyí Mawu ví lɛ́ɛ bǐ wɛ nɔ ɖu ɖo gbɛ ɔ́ jí.<br>
+                          Din ɔ́, ɖuɖeji e ɖo gbɛ ɔ́ jí ɔ́ wɛ nyí nǔɖiɖi mǐtɔn.<br><br>
+                        – Xó Aklúnɔ tɔn.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio-test.ogg" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                    </div>
+                </div>
+                <!-- 2ème Lecture -->
+                <div class="tab-pane fade" id="second-reading" role="tabpanel">
+                  <div>
+                    <div class="d-flex justify-content-between">
+                        <h5>Nuxixa Wegɔ ɔ</h5>
+                        <button class="copy-btn btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" onclick="copyAllText(this)">Kpɔ́n</button>
+                    </div>
+                      <p class="text-liturgical">
+                          “Mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌” (1 Jn 4.19 – 5.4).
+                      </p>
+                      <p class="text-liturgical">
+                          Xà wema nukɔntɔn e Sinsɛn Jaan wlan é mɛ <br><br>
+                        Mɛvívɛ́ná,<br>
+                        mǐ yí wǎn nú mɛ ɖó Mawu ɖésúnɔ wɛ yí wǎn nú mǐ jɛ nukɔn.<br>
+                          Ényí mɛɖé ɖɔ émí yí wǎn nú Mawu, bó ka gbɛ́ wǎn nú nɔví tɔn hǔn, adingbannɔ wɛ é nyí.<br>
+                          Đó mɛ e ma yí wǎn nú nɔví tɔn e mɔ wɛ é ɖe ɔ́ ǎ ɔ́, é sixú yí wǎn nú Mawu e é ma mɔ ǎ ɔ́ ǎ.<br>
+                          Sɛ́n e Klísu zɔ́n mǐ ɔ́ ɖíe: mɛ e yí wǎn nú Mawu ɔ́ ɖó ná yí wǎn nú nɔví tɔn lɔmɔ̌.<br><br>
+                          Mɛ e ɖi nǔ ɖɔ Jezu wɛ nyí Klísu ɔ́, Mawu wɛ ji i;<br>
+                          mɛ e yí wǎn nú Tɔ́ Vǐ ɔ́ ɔ́, é yí wǎn nú Vǐ e é ji ɔ́ lɔmɔ̌.<br>
+                          Lě e mǐ nɔ tunwun ɖɔ mǐ yí wǎn nú vǐ Mawu tɔn lɛ́ɛ gbɔn ɔ́ ɖíe:<br>
+                          hwenu e mǐ yí wǎn nú Mawu, bó nyi sɛ́n tɔn lɛ́ɛ é.<br>
+                          Đó wǎn yíyí nú Mawu wɛ nyí ɖɔ è nǐ nyi sɛ́n tɔn lɛ́ɛ;<br>
+                          sɛ́n tɔn lɛ́ɛ ka nyí agban bo kpɛn mǐ ǎ, ɖó mɛ e nyí Mawu ví lɛ́ɛ bǐ wɛ nɔ ɖu ɖo gbɛ ɔ́ jí.<br>
+                          Din ɔ́, ɖuɖeji e ɖo gbɛ ɔ́ jí ɔ́ wɛ nyí nǔɖiɖi mǐtɔn.<br><br>
+                        – Xó Aklúnɔ tɔn.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                    </div>
+                </div>
+                <!-- Add other tabs here similarly -->
+                 <!-- Psaume -->
+                <div class="tab-pane fade" id="psalm" role="tabpanel">
+                  <div>
+                    <div class="d-flex justify-content-between">
+                        <h5>Ðɛhan</h5>
+                        <button class="copy-btn btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" onclick="copyAllText(this)">Kpɔ́n</button>
+                    </div>
+                      <p class="text-liturgical">
+                          (71 (72), 1-2, 14.15bc, 17) <br>
+                          R/ Axɔ́sú lɛ́ɛ bǐ ná jɛ kpo ɖo nukɔn tɔn, to lɛ́ɛ bǐ ná sɛn ɛ. (Ðɛ 71, 11)
+                      </p>
+                      <p class="text-liturgical">
+                          Mawu, nǎ hlɔ̌nhlɔ́n towe lɛ́ɛ axɔ́sú ɔ́; <br>
+                      axɔ́sú ví élɔ́ ɔ́, hwɛjijɔ towe wɛ é ná.<br>
+                      É ní kpa acɛ nú togun towe kpó hwɛjijɔ kpó;<br>
+                      é ní wa nǔ jlɔ́jlɔ́ nú mɛ e ma ɖó taɖagbe ǎ é! <br><br>
+                      É nɔ́ hwlɛ́n yě gán sín yadonumɛ sí, é nɔ́ xɔ yě sín dǎkaxixo sí;<br>
+                      hun yětɔn xɔ akwɛ́ ɖo nukún tɔn mɛ.<br>
+                      Mǐ ná xo ɖɛ dó ta tɔn mɛ magbokɔ;<br>
+                      Ayǐhɔ́ngbe ayǐhɔ́ngbe ɔ́, mǐ ná xo ɖɛ dó jǐ tɔn.<br><br>
+                      Nyǐkɔ tɔn ní nɔ te káká sɔ́yi;<br>
+                      hwe glɔ́ fí ɔ́, nyǐkɔ tɔn ní nɔ te!<br>
+                      É wɛ ní xo ɖɛ dó akɔta e ɖo ayǐkúngban jí lɛ́ɛ bǐ jí;<br>
+                      To lɛ́ɛ bǐ ní ylɔ́ ɛ ɖɔ nyɔ̌nánɔ! <br><br>
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                    </div>
+                </div>
+          
+                <!-- Evangile -->
+                <div class="tab-pane fade" id="gospel" role="tabpanel">
+                  <div>
+                      
+                    <div class="d-flex justify-content-between">
+                        <h5>Wɛnɖagbe</h5>
+                        <button class="copy-btn btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" onclick="copyAllText(this)">Kpɔ́n</button>
+                    </div>
+                      <p class="text-liturgical">
+                          "Égbé ɔ́, nǔ e è wlán dó Mawuxówéma ɔ́ mɛ ɔ́ jɛ" (Lk 4,14-22a) <br>
+                      </p>
+                      <p class="acclamation">
+                         <strong>Aleluya, Aleluya.</strong> <br>
+                          Mawu Mavɔmavɔ sɛ́ mì dó ɖɔ má dó wɛn ɖagbe wamamɔnɔ lɛ́ɛ;<br>
+                          mi jlá kannumɔ lɛ́ɛ ɖɔ è jó yě dó.<br>
+                          <strong>Aleluya.</strong> (kpɔ́n Lk 4:18)<br>
+                      </p>
+                      <p class="text-liturgical">
+                          Wɛn Ɖagbe Jezu Klísu tɔn lě e Mɛ mímɛ́ Luki wlán gbɔn é<br><br>
+                          Hwenɛnu ɔ, <br>
+                          hwenu e Jezu, ɖò hlɔ̌nhlɔ́n Yɛsinsɛn tɔn mɛ é,<br>
+                          é lɛ́ kɔ yi Galilée;<br>
+                          Nyǐkɔ tɔn gba kpé xá ɔ́ bǐ mɛ.<br>
+                          É nɔ kplɔ́n nǔ mɛ ɖo kplɔ́ngbasá lɛ́ɛ;<br>
+                          bɔ mɛ bǐ nɔ kpa susu n'i.<br>
+                          É wá Nazalɛ́ti fí e é su ɖe é.<br>
+                          É byɔ́ kplɔ́ngbasá gbɔjɛzán Jwifu lɛ́ɛ tɔn gbe, lě e é ko nɔ bló gbɔn é.<br>
+                          é sí te bó ná xa nǔ.<br>
+                          È sɔ́ gbeyiɖɔ Ezayíi sín wema ɔ jó n’i.<br>
+                          É hun wema ɔ, bo mɔ fí e è wlan dó é:<br>
+                          Yɛ Mawu Mavɔmavɔ tɔn ɖo jǐ ce <br>
+                          ɖó Mawu Mavɔmavɔ wɛ kɔn ami dó ta nú mì.<br>
+                          É sɛ́ mì dó ɖɔ má dó Wɛn Ɖagbe wamamɔnɔ lɛ́ɛ;<br>
+                          mi jla mɛ e wlí kannumɔ lɛ́ɛ ɖɔ è jó yě dó;<br>
+                          bó ɖɔ nú nukúntíntɔ́nnɔ lɛ́ɛ ɖɔ yě ní mɔ nukúnnú;<br>
+                          bó ná ɖe mɛ e táfú wɛ è ɖe lɛ́ɛ sín kannumɔgbenu;<br>
+                          jla xwè ɖagbe ɖé <br>
+                          Aklúnɔ wɛ ná ɛ.<br>
+                          Jezu sú wema ɔ, bo sɔ́ jó nú mɛsɛntɔ́ ɔ, lobo jínjɔ́n ayǐ.<br>
+                          Mɛ e ɖo kplɔ́ngbasá lɛ́ɛ bǐ sín nukún ɖo jǐ tɔn.<br>
+                          Énɛ́ gúdo ɔ́, é jɛ ɖiɖɔ nú yě jí ɖɔ:<br>
+                          “Égbé ɔ, nǔ e è wlan dó Mawuxówema ɔ mɛ ɔ jɛ .<br>
+                          e a sè dìn é. »<br>
+                          Mɛ bǐ ɖekúnnu n’i <br>
+                          bɔ wǔjɔmɛ xó e nɔ tɔ́n sín nu tɔn mɛ lɛ́ɛ nɔ́ kpácá yě.<br><br>
+                          
+                          – Mi nú mǐ ní kpa susu nú Mawuxó ɔ́.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                    </div>
+                </div>
+          
+                <!-- Homelie -->
+                <div class="tab-pane fade" id="homily" role="tabpanel">
+                  <div>
+                    <div class="d-flex justify-content-between">
+                        <h5><strong>Xóɖiɖɔ: </strong>Wanyiyi Mawu tɔn, mɛylɔwema ɖé bo na yí wǎn nú nɔví mǐtɔn lɛ</h5>
+                        <button class="copy-btn btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" onclick="copyAllText(this)">Kpɔ́n</button>
+                    </div>
+                      <p class="text-liturgical">
+                          Xóɖiɖɔ Tɔ́ Luc HOUNOU tɔn, yɛhwenɔgán Saint Benoit tɔn<br>
+                      </p>
+                      <p class="text-liturgical">
+                          Nɔví ce vívɛ́ná lɛ́ɛ mi,<br><br>
+          
+                          Égbé ɔ, Xó Mawu tɔn flín mǐ nǔgbo taji ɖé ɖò nǔɖiɖi mǐtɔn mɛ: “Mɛ e yí wǎn nú Mawu é ni yí wǎn nú nɔví tɔn lɔmɔ̌. »<br>
+                          Wěɖexámɛ énɛ́ ɔ́, è sɔ́ sín wěma nukɔntɔn Jaan tɔn mɛ, bɔ é bɔkun, bó lɛ́ byɔ́ nǔ gègé.<br>
+                          É nɔ byɔ mǐ ɖɔ mǐ ni lin tamɛ dó wanyiyi e Mawu ɖó nú mǐ é jí, bo ɖè xlɛ́ ɖò kancica e ɖò mǐ kpo nɔví sunnu mǐtɔn lɛ kpo tɛntin é mɛ.<br><br>
+          
+                          <strong>1. Mawu wɛ yí wǎn nú mǐ jɛ nukɔn</strong><br>.
+                          Mawu gɔ́n wɛ nǔ lɛ bǐ nɔ bɛ́sín.<br>
+                          Cobonu mǐ na tlɛ sixu yí wǎn nú mɛ ɔ, É wɛ nyí Gbɛɖotɔ́ ɔ bo yí wǎn nú mǐ jɛ nukɔn.<br>
+                          Wanyiyi enɛ e ma ɖó dogbó ǎ é tɔ́n ɖò nùnina Vǐ ɖokpo géé tɔn Jezu Klisu tɔn mɛ, bo na dó hwlɛn mǐ gán.<br>
+                          Ðò Jezu mɛ ɔ, Mawu sɔ́ wuvɛ̌ mǐtɔn lɛ, hwɛ mǐtɔn lɛ kpo gǎnmaɖó mǐtɔn lɛ kpo dó jǐ tɔn.<br>
+                          É dlɛn alɔ dó gbɛtɔ́ e nɔ ɖó nǔsumɛnukúnmɛ hwɛhwɛ ǎ, bo nɔ ɖó ayi nǔ ɖebǔ wu ǎ é alǒ tlɛ nɔ fɔ́n gǔ é ɖé gɔ́n.<br><br>
+          
+                          Wǎn yíyí Mawu tɔn énɛ́ ɔ́, vɔ̌nu wɛ.<br>
+                          É nɔ sín nǔwukpikpé mǐtɔn lɛ alǒ nǔwukpikpé mǐtɔn lɛ wu ǎ.<br>
+                          È nɔ xwlé mɛ bǐ, enyi ye na bo nyí mɛ e ko nɔ gbɛ̀ ɖ’ayǐ lɛ é alǒ mɛ e ma nyí mɛ maɖóblɔ̌ ǎ lɛ é ɔ nɛ.<br>
+                          Nɔvi lɛ, mi ka mɔ nu jɛ mɛ ɖɔ e yi wan nu mi tawun à ?<br>
+                          Ayǐhɔ́ngbe ayǐhɔ́ngbe ɔ́, Mawu nɔ́ ɖɔ nú mǐ ɖɔ: “Mi xɔ akwɛ́ ɖo nukún ce mɛ. »<br>
+          
+                          <strong>2. Wǎn yí nú Mawu wɛ nyí ɖɔ è ni yí wǎn nú nɔví mǐtɔn lɛ</strong><br>.
+                          Amɔ̌, Sinsɛn-núkplɔnmɛtɔ́ Jaan nɔte ɖò finɛ ǎ.<br>
+                          É flín mǐ ɖɔ wanyiyi e mǐ ɖó nú Mawu é kún sixu nyí nǔgbo ó, enyi é ma wá huzu wanyiyi jɔ wanyiyi nú nɔví mǐtɔn lɛ ǎ ɔ nɛ.<br>
+                          Bɔ fí wɛ tagba ɔ bɛ́ ɖè.<br>
+                          É bɔwǔ bɔ è na ɖɔ, “Un yí wǎn nú Mawu.” »<br>
+                          Amɔ̌, wanyiyi nú nɔzo mǐtɔn, ɖò taji ɔ, hwenu e é vɛwǔ é ɔ, é nɔ sísɛ́ mǐ bɔ mǐ nɔ tɔ́n sín fí e mǐ nɔ vo ɖè lɛ é.<br><br>
+          
+                          Saint Jean est categorique : <strong>"Mɛ e ma yí wǎn nú nɔví tɔn e é mɔ é ǎ é ɔ́, é sixú yí wǎn nú Mawu e é ma mɔ ǎ é ǎ." »</strong><br>
+                          Xó enɛ lɛ nyí mɛylɔwema ɖé bo na dó gbéjé gbɛzán mǐtɔn kpɔ́n.<br>
+                          Mε wε nyi nɔvi ce ?<br>
+                          Hwɛndo ce, xɔntɔn ce lɛ alo mɛ e nɔ lin nu ɖi mi ɖɔhun lɛ kɛɖɛ wɛ ă.<br>
+                          Nɔvi ce ɖesu wɛ nyi jonɔ ɔ, wamamɔnɔ ɔ, mɛ e doya nu mi alo mɛ e gbɔn vo nu mi e.<br><br>
+          
+                          Wǎn yí nú nɔví mǐtɔn lɛ nɔ byɔ ɖɔ mǐ ni yí gbè nú ye alǒ yí gbè nú ye hwebǐnu ǎ,<br>
+                          loɔ, sísí ɖiɖó nú ye, tóɖiɖó ye kpo nǔ ɖagbe biba nú ye kpo wɛ.<br>
+                          É lɛ́ byɔ ɖɔ è ni sɔ́ hwɛ kɛ mɛ, enyi é na bo tlɛ vɛwǔ ɔ nɛ.<br><br>
+          
+                          <strong>3. Nɔví Nɔví sín Wanyiyi, Kúnnuɖenú nú Gbɛ̀ ɔ</strong><br>
+                          Nɔvi lɛ, wanyiyi sin kɔ xú gbɛ egbe tɔn ɔ, amɔ̌, hwɛhwɛ ɔ, mɛklánklán, wangbɛnumɛ kpodo mɛmaɖónukúnmɛ kpo wɛ nɔ xlɛ ɛ.<br>
+                          Ðó mǐ nyí Klisanwun lɛ wutu ɔ, è ylɔ mǐ ɖɔ mǐ ni nyí kúnnuɖetɔ́ wanyiyi Mawu tɔn tɔn.<br>
+                          Wanyiyi e mǐ ɖó nú mǐɖée é wɛ zɔ́n bɔ gbɛ̀ ɔ na tuùn ɖɔ ahwanvu Klisu tɔn wɛ mǐ nyí.<br><br>
+          
+                          Wǎn yí nú nɔví mǐtɔn lɛ lɔ nɔ byɔ ɖɔ mǐ ni wà nǔ.<br>
+                          Wanyiyi nɔ nyí xógbe alǒ lee nǔ nɔ cí nú mɛ é kɛɖɛ ǎ, loɔ, è nɔ sɔ́ dó wà nǔ tawun tawun lɛ mɛ:<br>
+                          ɖ'alɔ mɛ e ɖo ya ji wɛ lɛ́ɛ wú, mi jɛhun dó mɛ e è ɖo ya dó nú wɛ lɛ́ɛ jí, mi má nǔ xá mɛ e nǔ bǐ ma ɖó ǎ lɛ́ɛ.<br>
+                          Wanyiyi sin nu kpɛvi kpɛvi ɖokpo ɖokpo nɔ xɔ akwɛ.<br><br>
+          
+                          <strong>4. Eukaristi, wanyiyi mǐtɔn sín jɔtɛn</strong><br>.
+                          Gbɔn gudo ɔ, mi ɖokponɔ wɛ ɖo akpá enɛ ɔ mɛ ǎ.<br>
+                          Aklunɔzángbe tɛgbɛ ɔ, mǐ nɔ kplé bo nɔ lɛlɛ̌ dó Eukaristi, sakramɛnu wanyiyi tɔn ɔ.<br>
+                          Jezu nɔ sɔ́ éɖée jó nú mǐ, bonu mǐ lɔ na dó sixu sɔ́ mǐɖée jó nú mɛ ɖevo lɛ.<br>
+                          Eukaristi nɔ huzu mi bo nɔ na mi hlɔnhlɔn bɔ mi nɔ yi wan nu mɛ, hwenu e e na bo tlɛ cí ɖɔ e kun sixu jɛ ǎ ɔ.<br><br>
+          
+                          <strong>Xóɖɔɖókpɔ́</strong><br>
+                          Nɔvi ce lɛ, ɖo azan elɔ gbe ɔ, mi ni byɔ Aklunɔ ɖɔ e ni kplɔn mi bɔ mi na yi wan nu mɛ e ɖɔhun.<br>
+                          Wanyiyi tɔn ni slá wǔ nú mǐ sín cejɛnnabi bǐ mɛ, bo d’alɔ mǐ bɔ mǐ na mɔ nɔví sunnu alǒ nɔví nyɔnu e mǐ na yí wǎn na é ɖò mɛ ɖokpo ɖokpo mɛ.<br>
+                          Enyi mǐ yí wǎn nú nɔví mǐtɔn lɛ ɔ, mǐ yí wǎn nú Mawu.<br>
+                          Bɔ gbɔn wanyiyi nu Mawu gblamɛ ɔ, mi nɔ huzu gbɛ ɔ.<br><br>
+          
+                          Mali Ðyɔvǐ, kpɔ́ndéwú wanyiyi kpo sinsɛnzɔ́ kpo tɔn, ni xwedó mǐ ɖò ali élɔ́ jí.<br>
+                          Amɛn.<br>
+                      </p>
+                      <p class="text-liturgical">
+                          Wɛn Ɖagbe Jezu Klísu tɔn lě e Mɛ mímɛ́ Luki wlán gbɔn é<br><br>
+                          Hwenɛnu ɔ, <br>
+                          hwenu e Jezu, ɖò hlɔ̌nhlɔ́n Yɛsinsɛn tɔn mɛ é,<br>
+                          é lɛ́ kɔ yi Galilée;<br>
+                          Nyǐkɔ tɔn gba kpé xá ɔ́ bǐ mɛ.<br>
+                          É nɔ kplɔ́n nǔ mɛ ɖo kplɔ́ngbasá lɛ́ɛ;<br>
+                          bɔ mɛ bǐ nɔ kpa susu n'i.<br>
+                          É wá Nazalɛ́ti fí e é su ɖe é.<br>
+                          É byɔ́ kplɔ́ngbasá gbɔjɛzán Jwifu lɛ́ɛ tɔn gbe, lě e é ko nɔ bló gbɔn é.<br>
+                          é sí te bó ná xa nǔ.<br>
+                          È sɔ́ gbeyiɖɔ Ezayíi sín wema ɔ jó n’i.<br>
+                          É hun wema ɔ, bo mɔ fí e è wlan dó é:<br>
+                          Yɛ Mawu Mavɔmavɔ tɔn ɖo jǐ ce <br>
+                          ɖó Mawu Mavɔmavɔ wɛ kɔn ami dó ta nú mì.<br>
+                          É sɛ́ mì dó ɖɔ má dó Wɛn Ɖagbe wamamɔnɔ lɛ́ɛ;<br>
+                          mi jla mɛ e wlí kannumɔ lɛ́ɛ ɖɔ è jó yě dó;<br>
+                          bó ɖɔ nú nukúntíntɔ́nnɔ lɛ́ɛ ɖɔ yě ní mɔ nukúnnú;<br>
+                          bó ná ɖe mɛ e táfú wɛ è ɖe lɛ́ɛ sín kannumɔgbenu;<br>
+                          jla xwè ɖagbe ɖé <br>
+                          Aklúnɔ wɛ ná ɛ.<br>
+                          Jezu sú wema ɔ, bo sɔ́ jó nú mɛsɛntɔ́ ɔ, lobo jínjɔ́n ayǐ.<br>
+                          Mɛ e ɖo kplɔ́ngbasá lɛ́ɛ bǐ sín nukún ɖo jǐ tɔn.<br>
+                          Énɛ́ gúdo ɔ́, é jɛ ɖiɖɔ nú yě jí ɖɔ:<br>
+                          “Égbé ɔ, nǔ e è wlan dó Mawuxówema ɔ mɛ ɔ jɛ .<br>
+                          e a sè dìn é. »<br>
+                          Mɛ bǐ ɖekúnnu n’i <br>
+                          bɔ wǔjɔmɛ xó e nɔ tɔ́n sín nu tɔn mɛ lɛ́ɛ nɔ́ kpácá yě.<br><br>
+                          
+                          – Mi nú mǐ ní kpa susu nú Mawuxó ɔ́.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                    </div>
+                </div>
+          
+                <!-- Evangile -->
+                <div class="tab-pane fade" id="pu" role="tabpanel">
+                    <div class="d-flex justify-content-between">
+                        <h5>Ðɛxixo gbɛ ɔ bi tɔn</h5>
+                        <button class="copy-btn btn btn-sm" style="background-color: #045c04 !important; color: #FFF;" onclick="copyAllText(this)">Kpɔ́n</button>
+                    </div>
+                  <div>
+                      <p class="text-liturgical">
+                        <strong> 1. Nú Sinsɛngán lɛ </strong> <br>
+                     Aklunɔ, mǐ sɔ́ gǎn e ɖò Agun towe mɛ lɛ é dó alɔ towe mɛ:<br>
+                      Pápa, yɛhwenɔgán lɛ, yɛhwenɔgán lɛ kpo mɛ e nɔ w’azɔ̌ ɖò togun towe sín azɔ̌ mɛ lɛ é bǐ kpo. <br>
+                       Nǎ nǔnywɛ́ kpó hlɔ̌nhlɔ́n kpó yě, bónú yě ná kplá Agun towe lě e é jló we gbɔn é, <br> 
+                       bónú yě ná nyí kúnnuɖetɔ́ gbejininɔ tɔn nú wǎn yíyí towe kpódó nǔgbó towe kpó.<br>
+          
+                        Aklúnɔ, mǐ ɖo vo sa nú we wɛ.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                  </div>
+                  <div>
+                      <p class="text-liturgical">
+                        <strong>2. Nu toxóɖiɖɔ kpodo acɛkpikpa to mitɔn tɔn sin acɛkpikpa lɛ kpo .</strong> <br>
+                        Aklunɔ, mǐ sɔ́ toxóɖɔtɔ́ kpo acɛkpikpa tò mǐtɔn tɔn kpo sín gǎn lɛ dó alɔ mɛ nú we. <br>
+                         Mi hɛn ye lidǒ bonu ye na wá gbeta e sɔgbe bo lɛ́ nyɔ́ xomɛ lɛ é kɔn, <br>
+                          bonu ye na dó sixu w’azɔ̌ nú ɖagbe mɛ bǐ tɔn, hwɛjijɔ kpo fífá kpo. <br>
+                           D’alɔ ye bonu ye ni nɔ sɔ́ sísí gbɛtɔ́ tɔn kpo sísí nú mɛ e ma ɖó hlɔnhlɔn sɔmɔ̌ ǎ lɛ é kpo ɖó tɛn nukɔntɔn mɛ hwebǐnu. <br> 
+                        Aklúnɔ, mǐ ɖo vo sa nú we wɛ.
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                  </div>
+                  <div>
+                      <p class="text-liturgical">
+                        <strong>  3. Nú togun Mawu tɔn bǐ </strong> <br>
+                        Aklúnɔ, cɔ́ togun towe e kplé ɖo nukúnɖíɖó mɛ é. <br>
+                        Nɔ hɛn nǔɖitɔ́ lɛ lidǒ ɖò nǔɖiɖi yetɔn mɛ, nɔ gudo nú ye ɖò mɛtɛnkpɔn lɛ mɛ, <br>
+                         bo nɔ na awǎjijɛ mɛ bǐ bɔ ye nɔ ɖekúnnu nú Wɛnɖagbe towe gbɔn xomɛnyínyɔ́ sín nǔwiwa lɛ kpo nɔví nɔví sín nǔwiwa lɛ kpo gblamɛ. <br>
+                          Yɛsinsɛn towe ní xlɛ́ ali yě ɖo ali mímɛ́ ɔ́ jí.<br>
+                         Aklúnɔ, mǐ ɖo vo sa nú we wɛ. <br>
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                  </div>
+                  <div>
+                      <p class="text-liturgical">
+                        <strong> 4. Nu azinzɔnnɔ lɛ </strong> <br>
+                        Aklunɔ, mǐ nɔ xoɖɛ dó nɔví mǐtɔn e ɖò wuvɛ̌ sè wɛ ɖò agbaza alǒ gbigbɔ lixo lɛ é tamɛ. <br>
+                        Na gbɔdónúmɛ, hlɔnhlɔn kpo nukúnɖiɖo kpo ye. Nɔ gudo nú mɛ e nɔ xwedó ye lɛ é kpo wanyiyi kpo,<br>
+                        énɛ́ ɔ́, yě ná mɔ gbɔdónúmɛ ​​kpó fífá kpó sín jɔtɛn ɖo mi mɛ.<br> Aklúnɔ, mǐ ɖo vo sa nú we wɛ.<br>
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                  </div>
+                  <div>
+                      <p class="text-liturgical">
+                        <strong>5. Nu mɛ e kú ɔ </strong> <br>
+                          Aklúnɔ, nɔví mǐtɔn e kú lɛ́ɛ ɔ́, mǐ sɔ́ dó alɔ mɛ nú we. <br>
+                          Yǐ yě dó wěziza towe mɛ bó ná yě awǎjíjɛ mavɔmavɔ e nyí ɖɔ yě ná nɔ lin tamɛ dó wǔ we nukúnmɛ nukúnmɛ é. <br>
+                          Dǒ gbɔ nú xwédo yetɔn lɛ kpo mɛvívɛ́ yetɔn lɛ kpo ɖò aluwɛ yetɔn mɛ, bo hɛn nukúnɖiɖo fínfɔ́n sín kú tɔn e ye ɖó é lidǒ. <br>
+                          Aklúnɔ, mǐ ɖo vo sa nú we wɛ. <br>
+                      </p>
+                      <audio class="audio-control" controls>
+                        <source src="audio/first-reading.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                      </audio>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+    
+        // Ouvrir ou fermer la sidebar avec le bouton
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    
+        // Fermer la sidebar quand on clique à l'extérieur
+        document.addEventListener('click', (event) => {
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnToggleButton = toggleSidebar.contains(event.target);
+    
+            // Si le clic n'est pas sur la sidebar ou le bouton, fermer la sidebar
+            if (!isClickInsideSidebar && !isClickOnToggleButton) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Fonction pour obtenir la date d'aujourd'hui
+    function getTodayDate() {
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return today.toLocaleDateString('fr-FR', options);
+    }
+
+    // Fonction pour déterminer le jour liturgique
+    function getLiturgicalDay(date) {
+        // Simuler un jour liturgique en fonction de la date (exemple statique)
+        const liturgicalDays = {
+            "Azǎn ɛnɛgɔ́ ɔ́ sun tɛ́nnɛgɔ́ ɔ́ xwè 2025 tɔn mɛ": "Azǎn ɛnɛgɔ́ ɔ́ gbè ɖò Epiphanie gudo - Xwè C",
+            "2025-01-10": "Vɛnsée ɖò Epiphanie gudo - Xwè C"
+        };
+        const formattedDate = date.toISOString().split('T')[0];
+        return liturgicalDays[formattedDate] || "È tuùn sinsɛnzán ɔ ǎ .";
+    }
+
+    // Initialisation de la page avec la date d'aujourd'hui
+    const today = new Date();
+    document.getElementById('current-date').textContent = getTodayDate();
+    document.getElementById('liturgical-day').textContent = getLiturgicalDay(today);
+
+
+        // Afficher le modal pour sélectionner une date
+    document.getElementById('btn-select-date').addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('dateModal'));
+        modal.show();
+    });
+
+    // Appliquer la date sélectionnée
+    document.getElementById('btn-apply-date').addEventListener('click', () => {
+        const dateInput = document.getElementById('date-picker');
+        const selectedDate = new Date(dateInput.value);
+
+        if (!isNaN(selectedDate)) {
+            document.getElementById('current-date').textContent = selectedDate.toLocaleDateString('fr-FR', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById('liturgical-day').textContent = getLiturgicalDay(selectedDate);
+
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('dateModal'));
+            modal.hide();
+        }
+    });
+    function copyParentParentText(button) {
+        // Sélectionnez le parent du parent du bouton
+        const grandParentDiv = button.parentElement.parentElement; // Le parent de la div parent
+        const textToCopy = grandParentDiv.innerText; // Récupère le texte visible dans le parent du parent
+
+        // Copie le texte dans le presse-papier
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            // Message de confirmation
+            alert("Texte copié avec succès !");
+        }).catch((err) => {
+            console.error("Erreur lors de la copie : ", err);
+        });
+    }
+
+
+
+    </script>
+
+    <script src="script.js"></script>
+    
+</body>
+</html>
