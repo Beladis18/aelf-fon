@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrollable Tabs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* Conteneur principal des onglets */
+    #liturgicalTabs {
+      display: flex; /* Forcer l'alignement des éléments en ligne */
+      overflow-x: auto; /* Activer le défilement horizontal */
+      white-space: nowrap; /* Empêcher les éléments de passer à la ligne */
+      -webkit-overflow-scrolling: touch; /* Défilement fluide sur mobile */
+    }
+
+    /* Empêche les éléments de s'étirer ou de se casser */
+    .nav-item {
+      flex: 0 0 auto; /* Empêche la flexibilité */
+    }
+
+    /* Pour s'assurer que le texte des boutons reste en une ligne */
+    .nav-link {
+      white-space: nowrap; /* Empêche la cassure de texte */
+    }
+
+    /* Style de la barre de défilement */
+    #liturgicalTabs::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    #liturgicalTabs::-webkit-scrollbar-thumb {
+      background-color: #007bff; /* Couleur de la barre de défilement */
+      border-radius: 4px;
+    }
+
+    #liturgicalTabs::-webkit-scrollbar-track {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <ul class="nav nav-tabs" id="liturgicalTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">Bǐ</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="first-reading-tab" data-bs-toggle="tab" data-bs-target="#first-reading" type="button" role="tab">Nuxixa Nukɔntɔn</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="psalm-tab" data-bs-toggle="tab" data-bs-target="#psalm" type="button" role="tab">Ðɛhan</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="second-reading-tab" data-bs-toggle="tab" data-bs-target="#second-reading" type="button" role="tab">Nuxixa Wegɔ ɔ</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="gospel-tab" data-bs-toggle="tab" data-bs-target="#gospel" type="button" role="tab">Wɛnɖagbe</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="homily-tab" data-bs-toggle="tab" data-bs-target="#homily" type="button" role="tab">Xóɖiɖɔ</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="pu-tab" data-bs-toggle="tab" data-bs-target="#pu" type="button" role="tab">Ðɛxixo gbɛ ɔ bi tɔn</button>
+      </li>
+    </ul>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
